@@ -24,9 +24,7 @@ export default defineNuxtConfig({
     },
   },
   icon: {
-    serverBundle: {
-      collections: ['heroicons'],
-    },
+    serverBundle: 'remote',
   },
   colorMode: {
     preference: 'dark',
