@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-02-19',
   devtools: { enabled: true },
-  modules: ['@nuxt/ui', '@nuxtjs/color-mode'],
+  modules: ['@nuxt/ui', '@nuxtjs/color-mode', '@nuxt/icon'],
   css: [
     '@vue-flow/core/dist/style.css',
     '@vue-flow/core/dist/theme-default.css',
@@ -23,8 +23,13 @@ export default defineNuxtConfig({
       ],
     },
   },
+  icon: {
+    serverBundle: {
+      collections: ['heroicons'],
+    },
+  },
   colorMode: {
-    preference: 'dark', // default value of $colorMode.preference
-    fallback: 'dark', // fallback value if not system preference found
+    preference: 'dark',
+    fallback: 'dark',
   },
 })
