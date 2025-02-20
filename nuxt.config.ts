@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   runtimeConfig: {
     public: {
-      GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+      geminiApiKey: process.env.NUXT_PUBLIC_GEMINI_API_KEY,
     },
   },
   compatibilityDate: '2025-02-19',

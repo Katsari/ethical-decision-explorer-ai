@@ -331,9 +331,11 @@ export const generateDecisionTree = async (
   question: string
 ): Promise<GeminiResponse> => {
   const config = useRuntimeConfig()
-  const apiKey = config.public.GEMINI_API_KEY
+  const apiKey = config.public.geminiApiKey
   if (!apiKey) {
-    throw new Error('GEMINI_API_KEY not found in environment variables')
+    throw new Error(
+      'NUXT_PUBLIC_GEMINI_API_KEY not found in environment variables'
+    )
   }
 
   const response = await fetch(
