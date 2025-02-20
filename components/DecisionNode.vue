@@ -169,7 +169,7 @@
 </template>
 
 <script setup lang="ts">
-import { type NodeProps } from '@vue-flow/core'
+import type { NodeProps } from '@vue-flow/core'
 
 interface FrameworkAnalysis {
   credence: number
