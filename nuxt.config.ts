@@ -14,7 +14,6 @@ export default defineNuxtConfig({
     '@vue-flow/controls/dist/style.css',
   ],
   app: {
-    baseURL: '/ethical-analysis-visualizer-ai/', // for GitHub Pages
     head: {
       title: 'Ethical Analysis Visualizer',
       meta: [
