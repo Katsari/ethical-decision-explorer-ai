@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-02-19',
   devtools: { enabled: true },
-  modules: ['@nuxt/ui', '@nuxtjs/color-mode', '@nuxt/icon'],
+  modules: ['@nuxt/ui', '@nuxtjs/color-mode'],
   css: [
     '@vue-flow/core/dist/style.css',
     '@vue-flow/core/dist/theme-default.css',
@@ -24,7 +24,11 @@ export default defineNuxtConfig({
     },
   },
   icon: {
-    serverBundle: 'remote',
+    clientBundle: {
+      // list of icons to include in the client bundle
+      icons: ['heroicons:x-mark', 'heroicons:arrow-path-20-solid'],
+      scan: true,
+    },
   },
   colorMode: {
     preference: 'dark',
