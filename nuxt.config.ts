@@ -9,15 +9,16 @@ export default defineNuxtConfig({
     '@vue-flow/controls/dist/style.css',
   ],
   app: {
+    baseURL: '/ethical-analysis-visualizer-ai/', // for GitHub Pages
     head: {
-      title: 'Ethical Decision Tree Explorer',
+      title: 'Ethical Analysis Visualizer',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
         {
           name: 'description',
           content:
-            'Explore ethical decisions through interactive decision trees',
+            'Explore ethical questions through interactive decision trees, powered by LLMs.',
         },
       ],
     },
