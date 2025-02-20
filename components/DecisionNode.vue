@@ -97,6 +97,19 @@
                     }})
                   </UBadge>
                   <UBadge
+                    v-if="choice.frameworkWeights.contractualism"
+                    color="purple"
+                    variant="outline"
+                    size="sm"
+                    class="bg-purple-500/10"
+                    :title="choice.frameworkWeights.contractualism.explanation"
+                  >
+                    Contractualism
+                    {{ choice.frameworkWeights.contractualism.credence }}% ({{
+                      choice.frameworkWeights.contractualism.choiceWorthiness
+                    }})
+                  </UBadge>
+                  <UBadge
                     v-if="choice.frameworkWeights.careEthics"
                     color="pink"
                     variant="outline"
@@ -107,19 +120,6 @@
                     Care Ethics
                     {{ choice.frameworkWeights.careEthics.credence }}% ({{
                       choice.frameworkWeights.careEthics.choiceWorthiness
-                    }})
-                  </UBadge>
-                  <UBadge
-                    v-if="choice.frameworkWeights.rightsEthics"
-                    color="purple"
-                    variant="outline"
-                    size="sm"
-                    class="bg-purple-500/10"
-                    :title="choice.frameworkWeights.rightsEthics.explanation"
-                  >
-                    Rights Ethics
-                    {{ choice.frameworkWeights.rightsEthics.credence }}% ({{
-                      choice.frameworkWeights.rightsEthics.choiceWorthiness
                     }})
                   </UBadge>
                 </div>
@@ -182,7 +182,7 @@ interface FrameworkWeights {
   deontology: FrameworkAnalysis
   virtueEthics: FrameworkAnalysis
   careEthics: FrameworkAnalysis
-  rightsEthics: FrameworkAnalysis
+  contractualism: FrameworkAnalysis
 }
 
 interface StakeholderVote {

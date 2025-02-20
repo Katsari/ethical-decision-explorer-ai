@@ -9,7 +9,7 @@ export interface FrameworkWeights {
   deontology: FrameworkAnalysis
   virtueEthics: FrameworkAnalysis
   careEthics: FrameworkAnalysis
-  rightsEthics: FrameworkAnalysis
+  contractualism: FrameworkAnalysis
 }
 
 export interface StakeholderVote {
@@ -38,6 +38,18 @@ export interface DecisionNode {
   id: string
   label: string
   description: string
-  choices?: Choice[]
+  choices: Choice[]
   ethicalImplications?: string
+}
+
+export interface Edge {
+  id?: string
+  source: string
+  target: string
+  label: string
+}
+
+export interface GeminiResponse {
+  nodes: DecisionNode[]
+  edges: Edge[]
 }

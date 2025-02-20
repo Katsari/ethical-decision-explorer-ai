@@ -37,8 +37,8 @@ const GEMINI_PROMPT = `You are an expert ethical decision tree architect special
       - Utilitarianism: Does it maximize overall good?
       - Deontology: Does it follow moral rules and duties?
       - Virtue Ethics: Does it build good character?
+      - Contractualism: Does it emphasize justice and mutual agreement?
       - Care Ethics: Does it maintain relationships and care?
-      - Rights Ethics: Does it protect fundamental rights?
       
       Calculate Expected Choice-Worthiness:
       - Sum(credence * choice_worthiness) / 100
@@ -99,16 +99,16 @@ const GEMINI_PROMPT = `You are an expert ethical decision tree architect special
             "choiceWorthiness": 6,
             "explanation": "Promotes some virtuous traits"
           },
+          "contractualism": {
+            "credence": 5,
+            "choiceWorthiness": 4,
+            "explanation": "Focuses on justice and mutual agreement"
+          }
           "careEthics": {
             "credence": 10,
             "choiceWorthiness": 5,
             "explanation": "Maintains key relationships"
           },
-          "rightsEthics": {
-            "credence": 5,
-            "choiceWorthiness": 4,
-            "explanation": "Minimal rights implications"
-          }
         },
         "expectedChoiceWorthiness": 7.1,
         "moralParliament": {
@@ -156,61 +156,12 @@ const GEMINI_PROMPT = `You are an expert ethical decision tree architect special
 
 Generate the tree responding to the Current Dilemma.`
 
-export interface FrameworkAnalysis {
-  credence: number // 0-100: probability that framework is true
-  choiceWorthiness: number // -1000-1000: how well choice satisfies framework
-  explanation: string // Reasoning for the scores
-}
-
-export interface FrameworkWeights {
-  utilitarianism: FrameworkAnalysis
-  deontology: FrameworkAnalysis
-  virtueEthics: FrameworkAnalysis
-  careEthics: FrameworkAnalysis
-  rightsEthics: FrameworkAnalysis
-}
-
-export interface StakeholderVote {
-  stakeholder: string // Who is affected
-  perspective: string // Their ethical viewpoint
-  support: number // 0-10: how strongly they support this choice
-  reasoning: string // Why they support/oppose
-}
-
-export interface MoralParliamentResult {
-  stakeholderVotes: StakeholderVote[]
-  consensusScore: number // 0-10: degree of stakeholder agreement
-  summary: string // Analysis of stakeholder perspectives
-}
-
-export interface Choice {
-  text: string
-  frameworkWeights: FrameworkWeights | null
-  analysis: string | null
-  targetNodeId: string
-  expectedChoiceWorthiness: number // Weighted average of framework scores
-  moralParliament: MoralParliamentResult | null
-}
-
-export interface Node {
-  id: string
-  label: string
-  description: string
-  choices: Choice[]
-  ethicalImplications?: string
-}
-
-export interface Edge {
-  id?: string
-  source: string
-  target: string
-  label: string
-}
-
-export interface GeminiResponse {
-  nodes: Node[]
-  edges: Edge[]
-}
+import type {
+  Choice,
+  FrameworkWeights,
+  GeminiResponse,
+  MoralParliamentResult,
+} from '~/types'
 
 export const validateResponse = (response: GeminiResponse) => {
   // Verify framework weights and moral parliament for non-root nodes with choices
@@ -221,7 +172,9 @@ export const validateResponse = (response: GeminiResponse) => {
         if (choice.frameworkWeights) {
           validateFrameworkWeights(choice.frameworkWeights, node.id)
         } else {
-          throw new Error(`Missing framework weights in decision node ${node.id}`)
+          throw new Error(
+            `Missing framework weights in decision node ${node.id}`
+          )
         }
 
         // Validate moral parliament if present
@@ -236,24 +189,43 @@ export const validateResponse = (response: GeminiResponse) => {
   })
 }
 
-const validateFrameworkWeights = (weights: FrameworkWeights, nodeId: string) => {
-  const frameworks = ['utilitarianism', 'deontology', 'virtueEthics', 'careEthics', 'rightsEthics'] as const
-  
+const validateFrameworkWeights = (
+  weights: FrameworkWeights,
+  nodeId: string
+) => {
+  const frameworks = [
+    'utilitarianism',
+    'deontology',
+    'virtueEthics',
+    'careEthics',
+    'contractualism',
+  ] as const
+
   // Validate each framework has proper structure
-  frameworks.forEach(framework => {
+  frameworks.forEach((framework) => {
     const analysis = weights[framework]
     if (!analysis) {
       throw new Error(`Missing ${framework} analysis in node ${nodeId}`)
     }
-    
-    if (typeof analysis.credence !== 'number' || analysis.credence < 0 || analysis.credence > 100) {
+
+    if (
+      typeof analysis.credence !== 'number' ||
+      analysis.credence < 0 ||
+      analysis.credence > 100
+    ) {
       throw new Error(`Invalid credence for ${framework} in node ${nodeId}`)
     }
-    
-    if (typeof analysis.choiceWorthiness !== 'number' || analysis.choiceWorthiness < 0 || analysis.choiceWorthiness > 1000) {
-      throw new Error(`Invalid choiceWorthiness for ${framework} in node ${nodeId}`)
+
+    if (
+      typeof analysis.choiceWorthiness !== 'number' ||
+      analysis.choiceWorthiness < 0 ||
+      analysis.choiceWorthiness > 1000
+    ) {
+      throw new Error(
+        `Invalid choiceWorthiness for ${framework} in node ${nodeId}`
+      )
     }
-    
+
     if (!analysis.explanation) {
       throw new Error(`Missing explanation for ${framework} in node ${nodeId}`)
     }
@@ -264,26 +236,45 @@ const validateFrameworkWeights = (weights: FrameworkWeights, nodeId: string) => 
     return sum + weights[framework].credence
   }, 0)
 
-  if (Math.abs(totalWeight - 100) > 0.01) { // Allow small floating point errors
-    throw new Error(`Framework weights must sum to 100 in node ${nodeId}, got ${totalWeight}`)
+  if (Math.abs(totalWeight - 100) > 0.01) {
+    // Allow small floating point errors
+    throw new Error(
+      `Framework weights must sum to 100 in node ${nodeId}, got ${totalWeight}`
+    )
   }
 }
 
-const validateMoralParliament = (parliament: MoralParliamentResult, nodeId: string) => {
-  if (!Array.isArray(parliament.stakeholderVotes) || parliament.stakeholderVotes.length === 0) {
+const validateMoralParliament = (
+  parliament: MoralParliamentResult,
+  nodeId: string
+) => {
+  if (
+    !Array.isArray(parliament.stakeholderVotes) ||
+    parliament.stakeholderVotes.length === 0
+  ) {
     throw new Error(`Missing stakeholder votes in node ${nodeId}`)
   }
 
-  parliament.stakeholderVotes.forEach(vote => {
+  parliament.stakeholderVotes.forEach((vote) => {
     if (!vote.stakeholder || !vote.perspective || !vote.reasoning) {
       throw new Error(`Invalid stakeholder vote in node ${nodeId}`)
     }
-    if (typeof vote.support !== 'number' || vote.support < 0 || vote.support > 10) {
-      throw new Error(`Invalid support score in stakeholder vote for node ${nodeId}`)
+    if (
+      typeof vote.support !== 'number' ||
+      vote.support < 0 ||
+      vote.support > 10
+    ) {
+      throw new Error(
+        `Invalid support score in stakeholder vote for node ${nodeId}`
+      )
     }
   })
 
-  if (typeof parliament.consensusScore !== 'number' || parliament.consensusScore < 0 || parliament.consensusScore > 10) {
+  if (
+    typeof parliament.consensusScore !== 'number' ||
+    parliament.consensusScore < 0 ||
+    parliament.consensusScore > 10
+  ) {
     throw new Error(`Invalid consensus score in node ${nodeId}`)
   }
 
@@ -294,27 +285,42 @@ const validateMoralParliament = (parliament: MoralParliamentResult, nodeId: stri
 
 const validateExpectedChoiceWorthiness = (choice: Choice, nodeId: string) => {
   if (choice.expectedChoiceWorthiness === undefined) {
-    throw new Error(`Missing expected choice-worthiness score in node ${nodeId}`)
+    throw new Error(
+      `Missing expected choice-worthiness score in node ${nodeId}`
+    )
   }
 
-  if (typeof choice.expectedChoiceWorthiness !== 'number' || 
-      choice.expectedChoiceWorthiness < 0 || 
-      choice.expectedChoiceWorthiness > 10) {
-    throw new Error(`Invalid expected choice-worthiness score in node ${nodeId}`)
+  if (typeof choice.expectedChoiceWorthiness !== 'number') {
+    throw new Error(
+      `Invalid expected choice-worthiness score in node ${nodeId}`
+    )
   }
 
   // Validate that the score matches the calculation from framework weights
   if (choice.frameworkWeights) {
-    const calculated = calculateExpectedChoiceWorthiness(choice.frameworkWeights)
-    if (Math.abs(calculated - choice.expectedChoiceWorthiness) > 0.01) { // Allow small floating point errors
-      throw new Error(`Expected choice-worthiness score doesn't match framework calculations in node ${nodeId}`)
+    const calculated = calculateExpectedChoiceWorthiness(
+      choice.frameworkWeights
+    )
+    if (Math.abs(calculated - choice.expectedChoiceWorthiness) > 0.01) {
+      // Allow small floating point errors
+      throw new Error(
+        `Expected choice-worthiness score doesn't match framework calculations in node ${nodeId}`
+      )
     }
   }
 }
 
-const calculateExpectedChoiceWorthiness = (weights: FrameworkWeights): number => {
-  const frameworks = ['utilitarianism', 'deontology', 'virtueEthics', 'careEthics', 'rightsEthics'] as const
-  
+const calculateExpectedChoiceWorthiness = (
+  weights: FrameworkWeights
+): number => {
+  const frameworks = [
+    'utilitarianism',
+    'deontology',
+    'virtueEthics',
+    'careEthics',
+    'contractualism',
+  ] as const
+
   return frameworks.reduce((sum, framework) => {
     const analysis = weights[framework]
     return sum + (analysis.credence * analysis.choiceWorthiness) / 1000
@@ -322,9 +328,14 @@ const calculateExpectedChoiceWorthiness = (weights: FrameworkWeights): number =>
 }
 
 export const generateDecisionTree = async (
-  question: string,
-  apiKey: string
+  question: string
 ): Promise<GeminiResponse> => {
+  const config = useRuntimeConfig()
+  const apiKey = config.public.GEMINI_API_KEY
+  if (!apiKey) {
+    throw new Error('GEMINI_API_KEY not found in environment variables')
+  }
+
   const response = await fetch(
     'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
     {
@@ -360,11 +371,9 @@ export const generateDecisionTree = async (
   const data = await response.json()
   try {
     const textContent = data.candidates[0].content.parts[0].text
-    console.log('Raw Gemini response:', textContent)
     const jsonMatch = textContent.match(/\{[\s\S]*\}/)
     if (jsonMatch) {
       const parsedResponse = JSON.parse(jsonMatch[0])
-      console.log('Parsed response:', JSON.stringify(parsedResponse, null, 2))
       return parsedResponse
     }
     throw new Error('Invalid response format')

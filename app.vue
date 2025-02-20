@@ -1,7 +1,5 @@
 <template>
   <div class="h-screen flex flex-col bg-gray-950">
-    <ApiKeyForm v-if="!apiKey" @submit="handleApiKeySubmit" />
-
     <QuestionInterface :is-loading="isLoading" @submit="handleQuestionSubmit" />
 
     <div class="flex flex-1 overflow-hidden">
@@ -11,6 +9,7 @@
             :nodes="nodes"
             :edges="edges"
             @node-click="handleNodeClick"
+            @pane-click="handlePaneClick"
             @update:nodes="nodes = $event"
             @update:edges="edges = $event"
           />
@@ -28,16 +27,11 @@
 
 <script setup lang="ts">
 import type { Edge, Node } from '@vue-flow/core'
-import { computed } from 'vue'
 import { generateDecisionTree } from '~/utils/gemini'
 
-const apiKey = ref<string | null>(null)
 const isLoading = ref(false)
-const path = ref<string[]>(['Start'])
 const selectedNode = ref<any>(null)
-const { width } = useWindowSize()
-const isMobile = computed(() => width.value < 640) // sm breakpoint is 640px
-const showSidePanel = ref(import.meta.client ? !isMobile.value : true)
+const showSidePanel = ref(false)
 
 const edges = ref<Edge[]>([])
 const nodes = ref<Node[]>([
@@ -62,27 +56,10 @@ const nodes = ref<Node[]>([
   },
 ])
 
-const handleApiKeySubmit = (key: string) => {
-  apiKey.value = key
-  useToast().add({
-    title: 'API Key Set',
-    description: 'You can now start generating ethical decision trees.',
-  })
-}
-
 const handleQuestionSubmit = async (question: string) => {
-  if (!apiKey.value) {
-    useToast().add({
-      title: 'API Key Required',
-      description: 'Please enter your Gemini API key first.',
-      color: 'red',
-    })
-    return
-  }
-
   isLoading.value = true
   try {
-    const result = await generateDecisionTree(question, apiKey.value)
+    const result = await generateDecisionTree(question)
 
     // Create a map to store the level of each node
     const nodeLevels = new Map()
@@ -115,12 +92,18 @@ const handleQuestionSubmit = async (question: string) => {
       const position = levelPositions.get(level) || 0
       levelPositions.set(level, position + 1)
 
+      // Calculate positions relative to window center
+      const screenCenter =
+        typeof window !== 'undefined' ? window.innerWidth / 4 : 0
+      const xOffset = (position - width / 2) * 500
+      const yOffset = level * 450
+
       return {
         id: node.id,
         type: 'decision',
         position: {
-          x: (position - width / 2) * 500 + 400,
-          y: level * 450,
+          x: screenCenter + xOffset,
+          y: yOffset,
         },
         data: {
           id: node.id,
@@ -145,7 +128,6 @@ const handleQuestionSubmit = async (question: string) => {
 
     nodes.value = newNodes
     edges.value = newEdges
-    path.value = ['Start']
 
     useToast().add({
       title: 'Decision Tree Generated',
@@ -165,7 +147,10 @@ const handleQuestionSubmit = async (question: string) => {
 
 const handleNodeClick = (_: any, node: any) => {
   selectedNode.value = node.data
-  path.value = [...path.value, node.data.label]
   showSidePanel.value = true
+}
+
+const handlePaneClick = () => {
+  showSidePanel.value = false
 }
 </script>

@@ -1,7 +1,10 @@
 <template>
   <div
     v-if="selectedNode"
-    class="fixed inset-y-0 right-0 w-full sm:w-[28rem] md:w-[36rem] bg-gray-900/90 backdrop-blur-sm border-l border-gray-800 h-full flex flex-col animate-slide-in z-50 overflow-hidden"
+    :class="[
+      'fixed inset-y-0 right-0 w-full sm:w-[28rem] md:w-[36rem] bg-gray-900/90 backdrop-blur-sm border-l border-gray-800 h-full flex flex-col z-50 overflow-hidden',
+      isVisible ? 'animate-slide-in' : 'animate-slide-out',
+    ]"
   >
     <!-- Mobile Close Button -->
     <div class="flex justify-end pr-2 pt-2">
@@ -9,7 +12,7 @@
         icon="i-heroicons-x-mark"
         color="gray"
         variant="ghost"
-        @click="emit('close')"
+        @click="handleClose"
         class="mr-2 mt-2"
       />
     </div>
@@ -174,6 +177,36 @@
                       </p>
                     </div>
 
+                    <!-- Contractualism -->
+                    <div
+                      v-if="choice.frameworkWeights.contractualism"
+                      class="bg-purple-500/10 p-3 rounded-lg"
+                    >
+                      <div class="flex justify-between items-center mb-2">
+                        <span class="text-purple-400 font-medium"
+                          >Contractualism</span
+                        >
+                        <div class="flex gap-2">
+                          <UBadge color="purple" variant="solid"
+                            >Credence:
+                            {{
+                              choice.frameworkWeights.contractualism.credence
+                            }}%</UBadge
+                          >
+                          <UBadge color="purple" variant="outline"
+                            >Worth:
+                            {{
+                              choice.frameworkWeights.contractualism
+                                .choiceWorthiness
+                            }}</UBadge
+                          >
+                        </div>
+                      </div>
+                      <p class="text-sm text-gray-400">
+                        {{ choice.frameworkWeights.contractualism.explanation }}
+                      </p>
+                    </div>
+
                     <!-- Care Ethics -->
                     <div
                       v-if="choice.frameworkWeights.careEthics"
@@ -201,36 +234,6 @@
                       </div>
                       <p class="text-sm text-gray-400">
                         {{ choice.frameworkWeights.careEthics.explanation }}
-                      </p>
-                    </div>
-
-                    <!-- Rights Ethics -->
-                    <div
-                      v-if="choice.frameworkWeights.rightsEthics"
-                      class="bg-purple-500/10 p-3 rounded-lg"
-                    >
-                      <div class="flex justify-between items-center mb-2">
-                        <span class="text-purple-400 font-medium"
-                          >Rights Ethics</span
-                        >
-                        <div class="flex gap-2">
-                          <UBadge color="purple" variant="solid"
-                            >Credence:
-                            {{
-                              choice.frameworkWeights.rightsEthics.credence
-                            }}%</UBadge
-                          >
-                          <UBadge color="purple" variant="outline"
-                            >Worth:
-                            {{
-                              choice.frameworkWeights.rightsEthics
-                                .choiceWorthiness
-                            }}</UBadge
-                          >
-                        </div>
-                      </div>
-                      <p class="text-sm text-gray-400">
-                        {{ choice.frameworkWeights.rightsEthics.explanation }}
                       </p>
                     </div>
                   </div>
@@ -341,21 +344,53 @@
   }
 }
 
+@keyframes slide-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+
 .animate-slide-in {
   animation: slide-in 0.3s ease-out;
+}
+
+.animate-slide-out {
+  animation: slide-out 0.3s ease-out;
 }
 </style>
 
 <script setup lang="ts">
+import { ref, watch } from 'vue'
+import type { Choice, DecisionNode as SelectedNode } from '~/types'
+
 const emit = defineEmits<{
   close: []
 }>()
 
 const { getChoiceWorthinessColor, getConsensusColor } = useEthicalScores()
 
-import type { DecisionNode as SelectedNode } from '~/types'
-
-defineProps<{
+const props = defineProps<{
   selectedNode: SelectedNode | null
 }>()
+
+const isVisible = ref(true)
+
+function handleClose() {
+  isVisible.value = false
+  // Wait for animation to complete before emitting close
+  setTimeout(() => emit('close'), 300)
+}
+
+// Reset visibility when node changes
+watch(
+  () => props.selectedNode,
+  () => {
+    isVisible.value = true
+  }
+)
 </script>

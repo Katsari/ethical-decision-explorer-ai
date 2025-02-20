@@ -1,5 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  runtimeConfig: {
+    public: {
+      GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    },
+  },
   compatibilityDate: '2025-02-19',
   devtools: { enabled: true },
   modules: ['@nuxt/ui', '@nuxtjs/color-mode'],
