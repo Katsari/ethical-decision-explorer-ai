@@ -8,8 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
     steps:
       - uses: actions/checkout@v4
       - run: corepack enable
@@ -18,7 +17,10 @@ jobs:
           node-version: '20'
       # Pick your own package manager and build script
       - run: npm install
-      - run: NUXT_APP_BASE_URL=/ethical-analysis-visualizer-ai/ npx nuxt build --preset github_pages
+      - name: Build Nuxt app
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: NUXT_APP_BASE_URL=/ethical-analysis-visualizer-ai/ npx nuxt build --preset github_pages
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
