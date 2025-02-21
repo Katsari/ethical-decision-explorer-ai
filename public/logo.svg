@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-95 -95 190 190">
+  <linearGradient id="petalGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#1a237e" />
+    <stop offset="100%" stop-color="#3949ab" />
+  </linearGradient>
+  
+  <linearGradient id="petalGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+    <stop offset="0%" stop-color="#283593" />
+    <stop offset="100%" stop-color="#5c6bc0" />
+  </linearGradient>
+  <path d="M0,-90 C30,-80 70,-45 60,0 C50,45 0,70 -25,60 C-50,50 -40,10 0,-90" 
+        fill="url(#petalGradient1)" opacity="0.9" transform="rotate(0)"/>
+  <path d="M0,-90 C30,-80 70,-45 60,0 C50,45 0,70 -25,60 C-50,50 -40,10 0,-90" 
+        fill="url(#petalGradient2)" opacity="0.85" transform="rotate(45)"/>
+  
+  <path d="M0,-90 C30,-80 70,-45 60,0 C50,45 0,70 -25,60 C-50,50 -40,10 0,-90" 
+        fill="url(#petalGradient1)" opacity="0.9" transform="rotate(90)"/>
+  
+  <path d="M0,-90 C30,-80 70,-45 60,0 C50,45 0,70 -25,60 C-50,50 -40,10 0,-90" 
+        fill="url(#petalGradient2)" opacity="0.85" transform="rotate(135)"/>
+  
+  <path d="M0,-90 C30,-80 70,-45 60,0 C50,45 0,70 -25,60 C-50,50 -40,10 0,-90" 
+        fill="url(#petalGradient1)" opacity="0.9" transform="rotate(180)"/>
+  
+  <path d="M0,-90 C30,-80 70,-45 60,0 C50,45 0,70 -25,60 C-50,50 -40,10 0,-90" 
+        fill="url(#petalGradient2)" opacity="0.85" transform="rotate(225)"/>
+  
+  <path d="M0,-90 C30,-80 70,-45 60,0 C50,45 0,70 -25,60 C-50,50 -40,10 0,-90" 
+        fill="url(#petalGradient1)" opacity="0.9" transform="rotate(270)"/>
+  
+  <path d="M0,-90 C30,-80 70,-45 60,0 C50,45 0,70 -25,60 C-50,50 -40,10 0,-90" 
+        fill="url(#petalGradient2)" opacity="0.85" transform="rotate(315)"/>
+  
+  <radialGradient id="centerGlow" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0%" stop-color="#5c6bc0" stop-opacity="0.95"/>
+    <stop offset="50%" stop-color="#3949ab" stop-opacity="0.85"/>
+    <stop offset="100%" stop-color="#1a237e" stop-opacity="0.75"/>
+  </radialGradient>
+  <circle cx="0" cy="0" r="35" fill="url(#centerGlow)"/>
+  
+  <radialGradient id="highlightGlow" cx="0.3" cy="0.3" r="0.5">
+    <stop offset="0%" stop-color="#7986cb" stop-opacity="0.4"/>
+    <stop offset="100%" stop-color="#3949ab" stop-opacity="0"/>
+  </radialGradient>
+  <circle cx="-5" cy="-5" r="20" fill="url(#highlightGlow)"/>
+</svg>
