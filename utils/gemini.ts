@@ -16,8 +16,9 @@ const GEMINI_PROMPT = `Create a strictly structured tree for an ethical dilemma 
       - Credences must sum to 100%
 
    B. Decision Nodes:
-      - Must have 2-3 choices
-      - Each choice needs:
+      - At least 2 decision nodes.
+      - Each decision node should have only one choice.
+      - The choice needs:
         1. Framework weights (based on how well the choice aligns with each framework)
         2. Ethical analysis text explaining the weights
       - Analysis should explain why certain frameworks are weighted higher
@@ -155,6 +156,7 @@ const GEMINI_PROMPT = `Create a strictly structured tree for an ethical dilemma 
 - Framework analysis in root nodes
 - Missing ethical analysis text
 - Missing ethical implications in outcomes
+- Decision nodes with more than one choice
 - Framework credences not summing to 100%
 - Different framework credences between choices
 - Disconnected nodes

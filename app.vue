@@ -67,9 +67,7 @@ const handleQuestionSubmit = async (question: string) => {
   useToast().add({
     title: 'Analyzing question',
     description: 'Please wait while we generate the analysis...',
-    timeout: 6000,
-    pauseTimeoutOnHover: false,
-    color: 'bg-gray-900',
+    timeout: 9000,
   })
   try {
     const result = await generateDecisionTree(question)

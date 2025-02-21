@@ -75,7 +75,7 @@
           <div class="space-y-6">
             <h3
               class="font-medium text-gray-100 text-lg"
-              v-if="selectedNode.label !== 'Start Your Ethical Journey'"
+              v-if="selectedNode.label !== 'Start your ethical journey'"
             >
               Ethical Analysis
             </h3>

@@ -1,3 +1,5 @@
+import type { FrameworkCredences } from '~/types'
+
 export function useEthicalScores() {
   const frameworkColors = {
     utilitarianism: 'yellow',
@@ -7,17 +9,17 @@ export function useEthicalScores() {
     careEthics: 'pink',
   } as const
 
-  const getFrameworkColor = (name: keyof typeof frameworkColors): string =>
+  const getFrameworkColor = (name: keyof FrameworkCredences) =>
     frameworkColors[name] || 'gray'
 
-  const getChoiceWorthinessColor = (value: number): string => {
+  const getChoiceWorthinessColor = (value: number) => {
     if (value >= 500) return 'green'
     if (value >= 0) return 'emerald'
     if (value >= -500) return 'yellow'
     return 'red'
   }
 
-  const getConsensusColor = (value: number): string => {
+  const getConsensusColor = (value: number) => {
     if (value >= 8) return 'green'
     if (value >= 6) return 'emerald'
     if (value >= 4) return 'yellow'

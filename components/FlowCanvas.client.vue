@@ -28,7 +28,7 @@ import { Controls } from '@vue-flow/controls'
 import type { MouseTouchEvent } from '@vue-flow/core'
 import { VueFlow, type Edge, type Node } from '@vue-flow/core'
 import type { Component } from 'vue'
-import { computed } from 'vue'
+import { computed, markRaw } from 'vue'
 import DecisionNode from './DecisionNode.vue'
 
 import type { DecisionNode as DecisionNodeType } from '~/types'
@@ -47,7 +47,7 @@ const emit = defineEmits<{
 }>()
 
 const nodeTypes: Record<string, Component> = {
-  decision: DecisionNode,
+  decision: markRaw(DecisionNode),
 }
 
 const defaultViewport = computed(() => ({
@@ -67,6 +67,6 @@ const onNodeClick = ({
 }
 
 const onPaneClick = (event: MouseTouchEvent) => {
-  emit('pane-click')
+  emit('pane-click', event)
 }
 </script>
