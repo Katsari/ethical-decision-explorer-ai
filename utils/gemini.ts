@@ -1,4 +1,4 @@
-const GEMINI_PROMPT = `You are an expert ethical decision tree architect specializing in moral uncertainty analysis. Create strictly structured trees that combine Maximize Expected Choice-Worthiness with Moral Parliament deliberation.
+const GEMINI_PROMPT = `Create a strictly structured tree for an ethical dilemma that combines Maximize Expected Choice-Worthiness and Moral Parliament deliberation.
 
 # Tree Structure Requirements
 1. Hierarchy:
@@ -79,7 +79,7 @@ const GEMINI_PROMPT = `You are an expert ethical decision tree architect special
         "careEthics": 10
       },
       "choices": [{
-        "text": "Option A",
+        "text": "",
         "targetNodeId": "decision1",
         "frameworkWeights": null,
         "analysis": null
@@ -87,61 +87,61 @@ const GEMINI_PROMPT = `You are an expert ethical decision tree architect special
     },
     {
       "id": "decision1",
-      "label": "Decision Point",
-      "description": "Decision context",
+      "label": "",
+      "description": "",
       "choices": [{
         "text": "Choice 1",
         "targetNodeId": "outcome1",
         "frameworkWeights": {
           "utilitarianism": {
             "choiceWorthiness": 8,
-            "explanation": "High utility for majority benefit"
+            "explanation": ""
           },
           "deontology": {
             "choiceWorthiness": 7,
-            "explanation": "Respects moral duties with minor compromises"
+            "explanation": ""
           },
           "virtueEthics": {
             "choiceWorthiness": 6,
-            "explanation": "Promotes some virtuous traits"
+            "explanation": ""
           },
           "contractualism": {
             "choiceWorthiness": 4,
-            "explanation": "Focuses on justice and mutual agreement"
+            "explanation": ""
           },
           "careEthics": {
             "choiceWorthiness": 5,
-            "explanation": "Maintains key relationships"
+            "explanation": ""
           }
         },
         "expectedChoiceWorthiness": 7.1,
         "moralParliament": {
           "stakeholderVotes": [
             {
-              "stakeholder": "Direct Beneficiaries",
-              "perspective": "Consequentialist",
+              "stakeholder": "",
+              "perspective": "",
               "support": 9,
-              "reasoning": "Significant positive impact"
+              "reasoning": ""
             },
             {
-              "stakeholder": "Affected Community",
-              "perspective": "Rights-based",
+              "stakeholder": "",
+              "perspective": "",
               "support": 6,
-              "reasoning": "Acceptable trade-offs"
+              "reasoning": ""
             }
           ],
           "consensusScore": 7.5,
-          "summary": "Strong support from beneficiaries, moderate acceptance from community"
+          "summary": ""
         },
-        "analysis": "This choice strongly aligns with utilitarianism as it maximizes benefit for the most people. The high deontological weight reflects adherence to moral duties. Lower weights in other frameworks indicate potential tensions with personal virtue and care relationships."
+        "analysis": ""
       }]
     },
     {
       "id": "outcome1",
-      "label": "Consequence",
-      "description": "Final outcome",
+      "label": "",
+      "description": "",
       "choices": [],
-      "ethicalImplications": "This outcome raises important ethical considerations about balancing individual rights with collective good. While it upholds certain moral principles, it may strain relationships and test character."
+      "ethicalImplications": ""
     }
   ],
   "edges": [{
@@ -155,11 +155,11 @@ const GEMINI_PROMPT = `You are an expert ethical decision tree architect special
 - Framework analysis in root nodes
 - Missing ethical analysis text
 - Missing ethical implications in outcomes
-- Framework weights not summing to 100%
-- Disconnected nodes
+- Framework credences not summing to 100%
 - Different framework credences between choices
+- Disconnected nodes
 
-Generate the tree responding to the Current Dilemma.`
+Generate the tree responding to the Current Dilemma. Return only the JSON tree, do not include any other text.`
 
 import type {
   Choice,
@@ -379,8 +379,10 @@ export const generateDecisionTree = async (
     )
   }
 
+  const modelName = 'gemini-2.0-flash-thinking-exp-01-21' // 'gemini-2.0-flash'
+
   const response = await fetch(
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent',
+    `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent`,
     {
       method: 'POST',
       headers: {
@@ -397,11 +399,16 @@ export const generateDecisionTree = async (
             ],
           },
         ],
+        systemInstruction: {
+          parts: {
+            text: 'You are an expert ethical decision tree architect and philosopher specializing in moral uncertainty analysis',
+          },
+        },
         generationConfig: {
           temperature: 0.7,
           topK: 40,
           topP: 0.95,
-          maxOutputTokens: 7000,
+          maxOutputTokens: 8192,
         },
       }),
     }
@@ -417,7 +424,6 @@ export const generateDecisionTree = async (
     const jsonMatch = textContent.match(/\{[\s\S]*\}/)
     if (jsonMatch) {
       const parsedResponse = JSON.parse(jsonMatch[0])
-      console.log(parsedResponse)
       return parsedResponse
     }
     throw new Error('Invalid response format')
