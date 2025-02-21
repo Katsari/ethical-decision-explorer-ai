@@ -42,7 +42,7 @@
                 <!-- Maximize Expected Choice-Worthiness -->
                 <div class="flex items-center gap-2">
                   <span class="text-sm text-gray-400"
-                    >Maximize Expected Choice-Worthiness:</span
+                    >Expected Choice-Worthiness:</span
                   >
                   <UBadge
                     :color="
