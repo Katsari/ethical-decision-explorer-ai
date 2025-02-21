@@ -9,11 +9,46 @@ An interactive web application that helps explore ethical questions through deci
   - Utilitarianism
   - Deontological Ethics
   - Virtue Ethics
+  - Contractualism
   - Care Ethics
-  - Rights-based Ethics
 - Real-time AI-powered decision tree generation
 - Responsive and modern UI with Nuxt UI
 - Beautiful animated tree layouts with Vue Flow
+
+## Analysis Methods
+
+### Maximize Expected Choice-Worthiness (MEC)
+
+When faced with an ethical decision, the app helps you weigh different moral perspectives by calculating Expected Choice-Worthiness:
+
+- **Framework credence**: Assigns probability weights (0-100%) to different ethical frameworks based on how likely they are to be true
+- **Choice-worthiness**: Evaluates the moral value of each choice (-1000 to 1000) based on how well it aligns with different frameworks
+- **Expected value calculation**: Multiplies credence by choice-worthiness to produce an overall ethical score
+- **Multi-framework analysis**: Incorporates perspectives from:
+  - Utilitarianism (maximizing overall good)
+  - Deontology (moral rules and duties)
+  - Virtue Ethics (character development)
+  - Contractualism (justice and mutual agreement)
+  - Care Ethics (relationships and care)
+
+### Moral Parliament Deliberation
+
+Complements the quantitative analysis with a deliberative approach that simulates stakeholder perspectives:
+
+- **Stakeholder representation**: For each stakeholder:
+
+  - Identity and role in the decision
+  - Ethical perspective and viewpoint
+  - Support score (0-10) indicating position strength
+  - Detailed reasoning for their stance
+
+- **Deliberation outcome**:
+  - Consensus score (0-10) measuring stakeholder agreement
+  - Analysis of competing viewpoints
+  - Potential paths to resolution
+  - Final synthesis with confidence level
+
+By combining MEC with moral parliament deliberation, you can explore how different ethical theories compete and overlap, hear from various stakeholders, and arrive at well-reasoned decisions with confidence in your ethical reasoning.
 
 ## Technologies
 
@@ -52,13 +87,6 @@ npm run dev
 ```
 
 4. Open your browser and navigate to `http://localhost:3000`
-
-## Usage
-
-1. When you first open the application, you'll be prompted to enter your Gemini API key
-2. Enter your ethical question in the question field
-3. Click "Generate Tree" to create an interactive decision tree
-4. Explore the tree by clicking on nodes to view detailed analysis
 
 ## License
 
