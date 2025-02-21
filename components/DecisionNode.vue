@@ -10,23 +10,44 @@
       <div class="text-sm font-medium text-gray-100 mb-2">{{ data.label }}</div>
       <div class="text-xs text-gray-400 mb-3">{{ data.description }}</div>
 
-      <!-- Root Node -->
+      <!-- Root node -->
       <template v-if="data.id === 'root' && data.choices">
-        <div class="space-y-2">
-          <h4 class="text-xs font-medium text-gray-400">Available Choices</h4>
-          <div class="space-y-3">
-            <div
-              v-for="choice in data.choices"
-              :key="choice.text"
-              class="bg-gray-800/50 p-3 rounded"
-            >
-              <div class="text-sm text-gray-200">{{ choice.text }}</div>
+        <div class="space-y-4">
+          <!-- Ethical theory credences section -->
+          <div v-if="data.frameworkCredences" class="space-y-2">
+            <h4 class="text-xs font-medium text-gray-400">
+              Ethical Theory Credences
+            </h4>
+            <div class="flex flex-wrap gap-2">
+              <UBadge
+                v-for="(credence, name) in data.frameworkCredences"
+                :key="name"
+                :color="getFrameworkColor(name)"
+                variant="solid"
+                class="text-xs"
+              >
+                {{ formatFrameworkName(name) }}: {{ credence }}%
+              </UBadge>
+            </div>
+          </div>
+
+          <!-- Available choices section -->
+          <div class="space-y-2">
+            <h4 class="text-xs font-medium text-gray-400">Available Choices</h4>
+            <div class="space-y-3">
+              <div
+                v-for="choice in data.choices"
+                :key="choice.text"
+                class="bg-gray-800/50 p-3 rounded"
+              >
+                <div class="text-sm text-gray-200">{{ choice.text }}</div>
+              </div>
             </div>
           </div>
         </div>
       </template>
 
-      <!-- Decision Node with Choices -->
+      <!-- Decision node with choices -->
       <template v-else-if="data.choices && data.choices.length > 0">
         <div class="space-y-3">
           <div
@@ -36,7 +57,7 @@
           >
             <div class="text-sm text-gray-200">{{ choice.text }}</div>
 
-            <!-- Framework Analysis -->
+            <!-- Framework analysis -->
             <template v-if="choice.frameworkWeights && data.id !== 'root'">
               <div class="space-y-3">
                 <!-- Maximize Expected Choice-Worthiness -->
@@ -55,7 +76,7 @@
                   </UBadge>
                 </div>
 
-                <!-- Framework Credences -->
+                <!-- Framework credences -->
                 <div class="flex flex-wrap gap-1.5">
                   <span class="text-sm text-gray-400">
                     Choice-Worthiness by ethical framework:
@@ -121,7 +142,7 @@
                   </UBadge>
                 </div>
 
-                <!-- Moral Parliament Summary -->
+                <!-- Moral Parliament summary -->
                 <div
                   v-if="choice.moralParliament"
                   class="text-xs text-gray-400"
@@ -148,7 +169,7 @@
         </div>
       </template>
 
-      <!-- Consequence Node -->
+      <!-- Consequence node -->
       <template
         v-else-if="data.choices?.length === 0 && data.ethicalImplications"
       >
@@ -167,57 +188,21 @@
 
 <script setup lang="ts">
 import type { NodeProps } from '@vue-flow/core'
-
-interface FrameworkAnalysis {
-  credence: number
-  choiceWorthiness: number
-  explanation: string
-}
-
-interface FrameworkWeights {
-  utilitarianism: FrameworkAnalysis
-  deontology: FrameworkAnalysis
-  virtueEthics: FrameworkAnalysis
-  careEthics: FrameworkAnalysis
-  contractualism: FrameworkAnalysis
-}
-
-interface StakeholderVote {
-  stakeholder: string
-  perspective: string
-  support: number
-  reasoning: string
-}
-
-interface MoralParliamentResult {
-  stakeholderVotes: StakeholderVote[]
-  consensusScore: number
-  summary: string
-}
-
-interface DecisionNodeData {
-  id: string
-  label: string
-  description: string
-  choices?: Array<{
-    text: string
-    frameworkWeights: FrameworkWeights | null
-    analysis: string | null
-    targetNodeId: string
-    expectedChoiceWorthiness: number
-    moralParliament: MoralParliamentResult | null
-  }>
-  ethicalImplications?: string
-}
+import type { DecisionNode } from '~/types'
 
 const props = defineProps<
   NodeProps & {
-    data: DecisionNodeData
+    data: DecisionNode
     selected: boolean
   }
 >()
 
-const { getChoiceWorthinessColor, getConsensusColor } = useEthicalScores()
+const {
+  getFrameworkColor,
+  formatFrameworkName,
+  getChoiceWorthinessColor,
+  getConsensusColor,
+} = useEthicalScores()
 
 const nodeClasses = {
   base: 'bg-gray-800/50',

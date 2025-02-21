@@ -5,7 +5,7 @@ An interactive web application that helps explore ethical questions through deci
 ## Features
 
 - Interactive decision tree visualization
-- Multiple ethical frameworks support:
+- Multiple ethical theories/frameworks support:
   - Utilitarianism
   - Deontological Ethics
   - Virtue Ethics
@@ -21,10 +21,10 @@ An interactive web application that helps explore ethical questions through deci
 
 When faced with an ethical decision, the app helps you weigh different moral perspectives by calculating Expected Choice-Worthiness:
 
-- **Framework credence**: Assigns probability weights (0-100%) to different ethical frameworks based on how likely they are to be true
-- **Choice-worthiness**: Evaluates the moral value of each choice (-1000 to 1000) based on how well it aligns with different frameworks
+- **Ethical Theory credence**: Assigns probability weights (0-100%) to different ethical theories based on how likely they are to be true
+- **Choice-worthiness**: Evaluates the moral value of each choice (-1000 to 1000) based on how well it aligns with different theories
 - **Expected value calculation**: Multiplies credence by choice-worthiness to produce an overall ethical score
-- **Multi-framework analysis**: Incorporates perspectives from:
+- **Multi-theory analysis**: Incorporates perspectives from:
   - Utilitarianism (maximizing overall good)
   - Deontology (moral rules and duties)
   - Virtue Ethics (character development)

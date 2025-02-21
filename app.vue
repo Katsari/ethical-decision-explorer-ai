@@ -122,6 +122,7 @@ const handleQuestionSubmit = async (question: string) => {
           id: node.id,
           label: node.label,
           description: node.description,
+          frameworkCredences: node.frameworkCredences,
           choices: node.choices,
           ethicalImplications: node.ethicalImplications,
         },

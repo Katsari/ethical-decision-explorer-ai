@@ -6,7 +6,7 @@
       isVisible ? 'animate-slide-in' : 'animate-slide-out',
     ]"
   >
-    <!-- Mobile Close Button -->
+    <!-- Close button -->
     <div class="flex justify-end pr-2 pt-2">
       <UButton
         icon="i-heroicons-x-mark"
@@ -28,15 +28,38 @@
         </p>
 
         <template v-if="selectedNode.id === 'root'">
-          <!-- Root Node Content -->
+          <!-- Root Node content -->
           <div class="space-y-6">
-            <h3 class="font-medium text-gray-100 text-lg">Available Choices</h3>
-            <div
-              v-for="(choice, index) in (selectedNode!.choices as Choice[])"
-              :key="index"
-              class="bg-gray-800/50 rounded-lg p-4"
-            >
-              <div class="text-gray-100">{{ choice.text }}</div>
+            <!-- Ethical theory credences -->
+            <div v-if="selectedNode.frameworkCredences" class="space-y-3">
+              <h3 class="font-medium text-gray-100 text-lg">
+                Ethical Theory Credences
+              </h3>
+              <div class="flex flex-wrap gap-2">
+                <UBadge
+                  v-for="(credence, name) in selectedNode.frameworkCredences"
+                  :key="name"
+                  :color="getFrameworkColor(name)"
+                  variant="solid"
+                  size="lg"
+                >
+                  {{ formatFrameworkName(name) }}: {{ credence }}%
+                </UBadge>
+              </div>
+            </div>
+
+            <!-- Available choices -->
+            <div class="space-y-3">
+              <h3 class="font-medium text-gray-100 text-lg">
+                Available Choices
+              </h3>
+              <div
+                v-for="(choice, index) in (selectedNode!.choices as Choice[])"
+                :key="index"
+                class="bg-gray-800/50 rounded-lg p-4"
+              >
+                <div class="text-gray-100">{{ choice.text }}</div>
+              </div>
             </div>
           </div>
         </template>
@@ -48,7 +71,7 @@
             selectedNode.choices.length > 0
           "
         >
-          <!-- Decision Node Content -->
+          <!-- Decision Node content -->
           <div class="space-y-6">
             <h3
               class="font-medium text-gray-100 text-lg"
@@ -61,12 +84,12 @@
               :key="index"
               class="bg-gray-800/50 rounded-lg p-4 space-y-4"
             >
-              <!-- Choice Text -->
+              <!-- Choice text -->
               <div class="text-gray-100 font-medium">{{ choice.text }}</div>
 
-              <!-- Framework Analysis -->
+              <!-- Framework analysis -->
               <div v-if="choice.frameworkWeights" class="space-y-4">
-                <!-- Maximize Expected Choice-Worthiness -->
+                <!-- Expected choice-worthiness -->
                 <div class="space-y-2">
                   <h4 class="text-sm font-medium text-gray-400">
                     Expected Choice-Worthiness
@@ -86,10 +109,10 @@
                   </div>
                 </div>
 
-                <!-- Framework Credences -->
+                <!-- Ethical Theory Analysis -->
                 <div class="space-y-2">
                   <h4 class="text-sm font-medium text-gray-400">
-                    Framework Analysis
+                    Ethical Theory Analysis
                   </h4>
                   <div class="space-y-3">
                     <!-- Utilitarianism -->
@@ -102,19 +125,13 @@
                           >Utilitarianism</span
                         >
                         <div class="flex gap-2">
-                          <UBadge color="yellow" variant="solid"
-                            >Credence:
-                            {{
-                              choice.frameworkWeights.utilitarianism.credence
-                            }}%</UBadge
-                          >
-                          <UBadge color="yellow" variant="outline"
-                            >Worth:
+                          <UBadge color="yellow" variant="outline">
+                            Choice-worthiness:
                             {{
                               choice.frameworkWeights.utilitarianism
                                 .choiceWorthiness
-                            }}</UBadge
-                          >
+                            }}
+                          </UBadge>
                         </div>
                       </div>
                       <p class="text-sm text-gray-400">
@@ -132,19 +149,13 @@
                           >Deontology</span
                         >
                         <div class="flex gap-2">
-                          <UBadge color="blue" variant="solid"
-                            >Credence:
-                            {{
-                              choice.frameworkWeights.deontology.credence
-                            }}%</UBadge
-                          >
-                          <UBadge color="blue" variant="outline"
-                            >Worth:
+                          <UBadge color="blue" variant="outline">
+                            Choice-worthiness:
                             {{
                               choice.frameworkWeights.deontology
                                 .choiceWorthiness
-                            }}</UBadge
-                          >
+                            }}
+                          </UBadge>
                         </div>
                       </div>
                       <p class="text-sm text-gray-400">
@@ -162,19 +173,13 @@
                           >Virtue Ethics</span
                         >
                         <div class="flex gap-2">
-                          <UBadge color="green" variant="solid"
-                            >Credence:
-                            {{
-                              choice.frameworkWeights.virtueEthics.credence
-                            }}%</UBadge
-                          >
-                          <UBadge color="green" variant="outline"
-                            >Worth:
+                          <UBadge color="green" variant="outline">
+                            Choice-worthiness:
                             {{
                               choice.frameworkWeights.virtueEthics
                                 .choiceWorthiness
-                            }}</UBadge
-                          >
+                            }}
+                          </UBadge>
                         </div>
                       </div>
                       <p class="text-sm text-gray-400">
@@ -192,19 +197,13 @@
                           >Contractualism</span
                         >
                         <div class="flex gap-2">
-                          <UBadge color="purple" variant="solid"
-                            >Credence:
-                            {{
-                              choice.frameworkWeights.contractualism.credence
-                            }}%</UBadge
-                          >
-                          <UBadge color="purple" variant="outline"
-                            >Worth:
+                          <UBadge color="purple" variant="outline">
+                            Choice-worthiness:
                             {{
                               choice.frameworkWeights.contractualism
                                 .choiceWorthiness
-                            }}</UBadge
-                          >
+                            }}
+                          </UBadge>
                         </div>
                       </div>
                       <p class="text-sm text-gray-400">
@@ -222,19 +221,13 @@
                           >Care Ethics</span
                         >
                         <div class="flex gap-2">
-                          <UBadge color="pink" variant="solid"
-                            >Credence:
-                            {{
-                              choice.frameworkWeights.careEthics.credence
-                            }}%</UBadge
-                          >
-                          <UBadge color="pink" variant="outline"
-                            >Worth:
+                          <UBadge color="pink" variant="outline">
+                            Choice-worthiness:
                             {{
                               choice.frameworkWeights.careEthics
                                 .choiceWorthiness
-                            }}</UBadge
-                          >
+                            }}
+                          </UBadge>
                         </div>
                       </div>
                       <p class="text-sm text-gray-400">
@@ -244,7 +237,7 @@
                   </div>
                 </div>
 
-                <!-- Moral Parliament Analysis -->
+                <!-- Moral Parliament analysis -->
                 <div v-if="choice.moralParliament" class="space-y-3">
                   <h4 class="text-sm font-medium text-gray-400">
                     Stakeholder Analysis
@@ -267,7 +260,7 @@
                       {{ choice.moralParliament.summary }}
                     </p>
 
-                    <!-- Stakeholder Votes -->
+                    <!-- Stakeholder votes -->
                     <div class="space-y-2 mt-3">
                       <h5 class="text-xs font-medium text-gray-500">
                         Stakeholder Perspectives
@@ -305,9 +298,9 @@
                 </div>
               </div>
 
-              <!-- Ethical Analysis -->
+              <!-- Ethical analysis -->
               <div v-if="choice.analysis" class="space-y-2">
-                <h4 class="text-sm font-medium text-gray-400">Analysis</h4>
+                <h4 class="text-sm font-medium text-gray-400">Overall Analysis</h4>
                 <p class="text-sm text-gray-300">{{ choice.analysis }}</p>
               </div>
             </div>
@@ -377,7 +370,12 @@ const emit = defineEmits<{
   close: []
 }>()
 
-const { getChoiceWorthinessColor, getConsensusColor } = useEthicalScores()
+const {
+  getChoiceWorthinessColor,
+  getConsensusColor,
+  getFrameworkColor,
+  formatFrameworkName,
+} = useEthicalScores()
 
 const props = defineProps<{
   selectedNode: SelectedNode | null

@@ -2,7 +2,7 @@ const GEMINI_PROMPT = `You are an expert ethical decision tree architect special
 
 # Tree Structure Requirements
 1. Hierarchy:
-   - Root node (id: "root"): Presents the ethical dilemma
+   - Root node (id: "root"): Presents the ethical dilemma and ethical framework credences
    - Decision nodes: Present choices with ethical framework analysis
    - Consequence nodes: Show outcomes with ethical implications
    - Max depth: 4 levels
@@ -11,12 +11,14 @@ const GEMINI_PROMPT = `You are an expert ethical decision tree architect special
    A. Root Node:
       - Contains initial dilemma description
       - Choices lead to decision nodes
-      - No framework analysis needed
+      - Contains framework credences (0-100) for each ethical framework
+      - These credences represent the probability that each framework is true
+      - Credences must sum to 100%
 
    B. Decision Nodes:
       - Must have 2-3 choices
       - Each choice needs:
-        1. Framework weights (sum to 100%)
+        1. Framework weights (based on how well the choice aligns with each framework)
         2. Ethical analysis text explaining the weights
       - Analysis should explain why certain frameworks are weighted higher
 
@@ -30,9 +32,8 @@ const GEMINI_PROMPT = `You are an expert ethical decision tree architect special
 
    A. Expected Choice-Worthiness Analysis:
       For each ethical framework:
-      - Credence (0-100): Probability that you assign of the chance the framework is true. This should be the same for all choices.
       - Choice-Worthiness (-1000 to 1000): How well the choice satisfies the framework
-      - Explanation: Detailed reasoning for both scores
+      - Explanation: Detailed reasoning for the score
       Frameworks to analyze:
       - Utilitarianism: Does it maximize overall good?
       - Deontology: Does it follow moral rules and duties?
@@ -41,7 +42,8 @@ const GEMINI_PROMPT = `You are an expert ethical decision tree architect special
       - Care Ethics: Does it maintain relationships and care?
       
       Calculate Expected Choice-Worthiness:
-      - Sum(credence * choice_worthiness) / 100
+      - Sum(framework_credence * choice_worthiness) / 100
+      - Uses credences from root node
       - This provides an overall ethical score
 
    B. Moral Parliament Analysis:
@@ -69,6 +71,13 @@ const GEMINI_PROMPT = `You are an expert ethical decision tree architect special
       "id": "root",
       "label": "Dilemma Title",
       "description": "Initial dilemma description",
+      "frameworkCredences": {
+        "utilitarianism": 40,
+        "deontology": 30,
+        "virtueEthics": 15,
+        "contractualism": 5,
+        "careEthics": 10
+      },
       "choices": [{
         "text": "Option A",
         "targetNodeId": "decision1",
@@ -85,30 +94,25 @@ const GEMINI_PROMPT = `You are an expert ethical decision tree architect special
         "targetNodeId": "outcome1",
         "frameworkWeights": {
           "utilitarianism": {
-            "credence": 40,
             "choiceWorthiness": 8,
             "explanation": "High utility for majority benefit"
           },
           "deontology": {
-            "credence": 30,
             "choiceWorthiness": 7,
             "explanation": "Respects moral duties with minor compromises"
           },
           "virtueEthics": {
-            "credence": 15,
             "choiceWorthiness": 6,
             "explanation": "Promotes some virtuous traits"
           },
           "contractualism": {
-            "credence": 5,
             "choiceWorthiness": 4,
             "explanation": "Focuses on justice and mutual agreement"
-          }
+          },
           "careEthics": {
-            "credence": 10,
             "choiceWorthiness": 5,
             "explanation": "Maintains key relationships"
-          },
+          }
         },
         "expectedChoiceWorthiness": 7.1,
         "moralParliament": {
@@ -159,12 +163,24 @@ Generate the tree responding to the Current Dilemma.`
 
 import type {
   Choice,
+  DecisionNode,
+  FrameworkCredences,
   FrameworkWeights,
   GeminiResponse,
   MoralParliamentResult,
 } from '~/types'
 
 export const validateResponse = (response: GeminiResponse) => {
+  // Validate root node exists and has framework credences
+  const rootNode = response.nodes.find((node) => node.id === 'root')
+  if (!rootNode) {
+    throw new Error('Root node missing')
+  }
+  if (!rootNode.frameworkCredences) {
+    throw new Error('Framework credences missing in root node')
+  }
+  validateFrameworkCredences(rootNode.frameworkCredences, 'root')
+
   // Verify framework weights and moral parliament for non-root nodes with choices
   response.nodes.forEach((node) => {
     if (node.id !== 'root' && node.choices.length > 0) {
@@ -184,10 +200,47 @@ export const validateResponse = (response: GeminiResponse) => {
         }
 
         // Validate expected choice-worthiness
-        validateExpectedChoiceWorthiness(choice, node.id)
+        validateExpectedChoiceWorthiness(choice, node.id, rootNode)
       })
     }
   })
+}
+
+const validateFrameworkCredences = (
+  credences: FrameworkCredences,
+  nodeId: string
+) => {
+  const frameworks = [
+    'utilitarianism',
+    'deontology',
+    'virtueEthics',
+    'contractualism',
+    'careEthics',
+  ] as const
+
+  // Validate each framework has a credence value
+  frameworks.forEach((framework) => {
+    const credence = credences[framework]
+    if (typeof credence !== 'number') {
+      throw new Error(`Missing ${framework} credence in node ${nodeId}`)
+    }
+
+    if (credence < 0 || credence > 100) {
+      throw new Error(`Invalid credence for ${framework} in node ${nodeId}`)
+    }
+  })
+
+  // Validate credences sum to 100
+  const totalCredence = frameworks.reduce((sum, framework) => {
+    return sum + credences[framework]
+  }, 0)
+
+  if (Math.abs(totalCredence - 100) > 0.01) {
+    // Allow small floating point errors
+    throw new Error(
+      `Framework credences must sum to 100 in node ${nodeId}, got ${totalCredence}`
+    )
+  }
 }
 
 const validateFrameworkWeights = (
@@ -198,8 +251,8 @@ const validateFrameworkWeights = (
     'utilitarianism',
     'deontology',
     'virtueEthics',
-    'careEthics',
     'contractualism',
+    'careEthics',
   ] as const
 
   // Validate each framework has proper structure
@@ -210,16 +263,8 @@ const validateFrameworkWeights = (
     }
 
     if (
-      typeof analysis.credence !== 'number' ||
-      analysis.credence < 0 ||
-      analysis.credence > 100
-    ) {
-      throw new Error(`Invalid credence for ${framework} in node ${nodeId}`)
-    }
-
-    if (
       typeof analysis.choiceWorthiness !== 'number' ||
-      analysis.choiceWorthiness < 0 ||
+      analysis.choiceWorthiness < -1000 ||
       analysis.choiceWorthiness > 1000
     ) {
       throw new Error(
@@ -231,18 +276,6 @@ const validateFrameworkWeights = (
       throw new Error(`Missing explanation for ${framework} in node ${nodeId}`)
     }
   })
-
-  // Validate weights sum to 100
-  const totalWeight = frameworks.reduce((sum, framework) => {
-    return sum + weights[framework].credence
-  }, 0)
-
-  if (Math.abs(totalWeight - 100) > 0.01) {
-    // Allow small floating point errors
-    throw new Error(
-      `Framework weights must sum to 100 in node ${nodeId}, got ${totalWeight}`
-    )
-  }
 }
 
 const validateMoralParliament = (
@@ -284,7 +317,11 @@ const validateMoralParliament = (
   }
 }
 
-const validateExpectedChoiceWorthiness = (choice: Choice, nodeId: string) => {
+const validateExpectedChoiceWorthiness = (
+  choice: Choice,
+  nodeId: string,
+  rootNode: DecisionNode
+) => {
   if (choice.expectedChoiceWorthiness === undefined) {
     throw new Error(
       `Missing expected choice-worthiness score in node ${nodeId}`
@@ -300,7 +337,8 @@ const validateExpectedChoiceWorthiness = (choice: Choice, nodeId: string) => {
   // Validate that the score matches the calculation from framework weights
   if (choice.frameworkWeights) {
     const calculated = calculateExpectedChoiceWorthiness(
-      choice.frameworkWeights
+      choice.frameworkWeights,
+      rootNode
     )
     if (Math.abs(calculated - choice.expectedChoiceWorthiness) > 0.01) {
       // Allow small floating point errors
@@ -312,7 +350,8 @@ const validateExpectedChoiceWorthiness = (choice: Choice, nodeId: string) => {
 }
 
 const calculateExpectedChoiceWorthiness = (
-  weights: FrameworkWeights
+  weights: FrameworkWeights,
+  rootNode: DecisionNode
 ): number => {
   const frameworks = [
     'utilitarianism',
@@ -324,7 +363,8 @@ const calculateExpectedChoiceWorthiness = (
 
   return frameworks.reduce((sum, framework) => {
     const analysis = weights[framework]
-    return sum + (analysis.credence * analysis.choiceWorthiness) / 1000
+    const credence = rootNode.frameworkCredences?.[framework] || 0
+    return sum + (credence * analysis.choiceWorthiness) / 100
   }, 0)
 }
 
@@ -377,6 +417,7 @@ export const generateDecisionTree = async (
     const jsonMatch = textContent.match(/\{[\s\S]*\}/)
     if (jsonMatch) {
       const parsedResponse = JSON.parse(jsonMatch[0])
+      console.log(parsedResponse)
       return parsedResponse
     }
     throw new Error('Invalid response format')

@@ -1,5 +1,4 @@
 export interface FrameworkAnalysis {
-  credence: number
   choiceWorthiness: number
   explanation: string
 }
@@ -10,6 +9,14 @@ export interface FrameworkWeights {
   virtueEthics: FrameworkAnalysis
   careEthics: FrameworkAnalysis
   contractualism: FrameworkAnalysis
+}
+
+export interface FrameworkCredences {
+  utilitarianism: number
+  deontology: number
+  virtueEthics: number
+  careEthics: number
+  contractualism: number
 }
 
 export interface StakeholderVote {
@@ -40,6 +47,7 @@ export interface DecisionNode {
   description: string
   choices: Choice[]
   ethicalImplications?: string
+  frameworkCredences?: FrameworkCredences
 }
 
 export interface Edge {
