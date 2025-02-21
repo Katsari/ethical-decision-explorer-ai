@@ -1,4 +1,4 @@
-# Ethical Analysis Visualizer
+# Ethical Decision Explorer
 
 An interactive web application that helps explore ethical questions through decision trees, powered by LLMs.
 

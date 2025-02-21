@@ -15,7 +15,7 @@ export default defineNuxtConfig({
   ],
   app: {
     head: {
-      title: 'Ethical Analysis Visualizer',
+      title: 'Ethical Decision Explorer',
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
