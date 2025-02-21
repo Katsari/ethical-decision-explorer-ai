@@ -69,7 +69,7 @@
                 <!-- Maximize Expected Choice-Worthiness -->
                 <div class="space-y-2">
                   <h4 class="text-sm font-medium text-gray-400">
-                    Maximize Expected Choice-Worthiness
+                    Expected Choice-Worthiness
                   </h4>
                   <div class="flex items-center gap-2">
                     <UBadge
