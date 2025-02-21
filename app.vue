@@ -31,6 +31,10 @@
 import type { Edge, Node } from '@vue-flow/core'
 import { generateDecisionTree } from '~/utils/gemini'
 
+useHead({
+  link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
+})
+
 const isLoading = ref(false)
 const selectedNode = ref<any>(null)
 const showSidePanel = ref(false)
