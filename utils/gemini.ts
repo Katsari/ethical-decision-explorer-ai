@@ -358,10 +358,10 @@ export const generateDecisionTree = async (
           },
         ],
         generationConfig: {
-          temperature: 1,
+          temperature: 0.7,
           topK: 40,
           topP: 0.95,
-          maxOutputTokens: 4000,
+          maxOutputTokens: 7000,
         },
       }),
     }
