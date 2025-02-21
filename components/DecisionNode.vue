@@ -39,10 +39,10 @@
             <!-- Framework Analysis -->
             <template v-if="choice.frameworkWeights && data.id !== 'root'">
               <div class="space-y-3">
-                <!-- Expected Choice-Worthiness -->
+                <!-- Maximize Expected Choice-Worthiness -->
                 <div class="flex items-center gap-2">
                   <span class="text-sm text-gray-400"
-                    >Expected Choice-Worthiness:</span
+                    >Maximize Expected Choice-Worthiness:</span
                   >
                   <UBadge
                     :color="
@@ -57,6 +57,9 @@
 
                 <!-- Framework Credences -->
                 <div class="flex flex-wrap gap-1.5">
+                  <span class="text-sm text-gray-400">
+                    Choice-Worthiness by ethical framework:
+                  </span>
                   <UBadge
                     v-if="choice.frameworkWeights.utilitarianism"
                     color="yellow"
@@ -65,10 +68,10 @@
                     class="bg-yellow-500/10"
                     :title="choice.frameworkWeights.utilitarianism.explanation"
                   >
-                    Utilitarianism
-                    {{ choice.frameworkWeights.utilitarianism.credence }}% ({{
+                    Utilitarianism:
+                    {{
                       choice.frameworkWeights.utilitarianism.choiceWorthiness
-                    }})
+                    }}
                   </UBadge>
                   <UBadge
                     v-if="choice.frameworkWeights.deontology"
@@ -78,10 +81,8 @@
                     class="bg-blue-500/10"
                     :title="choice.frameworkWeights.deontology.explanation"
                   >
-                    Deontology
-                    {{ choice.frameworkWeights.deontology.credence }}% ({{
-                      choice.frameworkWeights.deontology.choiceWorthiness
-                    }})
+                    Deontology:
+                    {{ choice.frameworkWeights.deontology.choiceWorthiness }}
                   </UBadge>
                   <UBadge
                     v-if="choice.frameworkWeights.virtueEthics"
@@ -91,10 +92,8 @@
                     class="bg-green-500/10"
                     :title="choice.frameworkWeights.virtueEthics.explanation"
                   >
-                    Virtue Ethics
-                    {{ choice.frameworkWeights.virtueEthics.credence }}% ({{
-                      choice.frameworkWeights.virtueEthics.choiceWorthiness
-                    }})
+                    Virtue Ethics:
+                    {{ choice.frameworkWeights.virtueEthics.choiceWorthiness }}
                   </UBadge>
                   <UBadge
                     v-if="choice.frameworkWeights.contractualism"
@@ -104,10 +103,10 @@
                     class="bg-purple-500/10"
                     :title="choice.frameworkWeights.contractualism.explanation"
                   >
-                    Contractualism
-                    {{ choice.frameworkWeights.contractualism.credence }}% ({{
+                    Contractualism:
+                    {{
                       choice.frameworkWeights.contractualism.choiceWorthiness
-                    }})
+                    }}
                   </UBadge>
                   <UBadge
                     v-if="choice.frameworkWeights.careEthics"
@@ -117,10 +116,8 @@
                     class="bg-pink-500/10"
                     :title="choice.frameworkWeights.careEthics.explanation"
                   >
-                    Care Ethics
-                    {{ choice.frameworkWeights.careEthics.credence }}% ({{
-                      choice.frameworkWeights.careEthics.choiceWorthiness
-                    }})
+                    Care Ethics:
+                    {{ choice.frameworkWeights.careEthics.choiceWorthiness }}
                   </UBadge>
                 </div>
 

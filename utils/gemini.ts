@@ -1,4 +1,4 @@
-const GEMINI_PROMPT = `You are an expert ethical decision tree architect specializing in moral uncertainty analysis. Create strictly structured trees that combine Expected Choice-Worthiness maximization with Moral Parliament deliberation.
+const GEMINI_PROMPT = `You are an expert ethical decision tree architect specializing in moral uncertainty analysis. Create strictly structured trees that combine Maximize Expected Choice-Worthiness with Moral Parliament deliberation.
 
 # Tree Structure Requirements
 1. Hierarchy:
@@ -30,7 +30,7 @@ const GEMINI_PROMPT = `You are an expert ethical decision tree architect special
 
    A. Expected Choice-Worthiness Analysis:
       For each ethical framework:
-      - Credence (0-100): Probability that you assign of the chance the framework is true
+      - Credence (0-100): Probability that you assign of the chance the framework is true. This should be the same for all choices.
       - Choice-Worthiness (-1000 to 1000): How well the choice satisfies the framework
       - Explanation: Detailed reasoning for both scores
       Frameworks to analyze:
@@ -129,7 +129,7 @@ const GEMINI_PROMPT = `You are an expert ethical decision tree architect special
           "consensusScore": 7.5,
           "summary": "Strong support from beneficiaries, moderate acceptance from community"
         },
-        "analysis": "This choice strongly aligns with utilitarianism (40%) as it maximizes benefit for the most people. The high deontological weight (30%) reflects adherence to moral duties. Lower weights in other frameworks indicate potential tensions with personal virtue and care relationships."
+        "analysis": "This choice strongly aligns with utilitarianism as it maximizes benefit for the most people. The high deontological weight reflects adherence to moral duties. Lower weights in other frameworks indicate potential tensions with personal virtue and care relationships."
       }]
     },
     {
@@ -148,11 +148,12 @@ const GEMINI_PROMPT = `You are an expert ethical decision tree architect special
 }
 
 # Common Errors to Avoid
-❌ Framework analysis in root nodes
-❌ Missing ethical analysis text
-❌ Missing ethical implications in outcomes
-❌ Framework weights not summing to 100%
-❌ Disconnected nodes
+- Framework analysis in root nodes
+- Missing ethical analysis text
+- Missing ethical implications in outcomes
+- Framework weights not summing to 100%
+- Disconnected nodes
+- Different framework credences between choices
 
 Generate the tree responding to the Current Dilemma.`
 

@@ -43,7 +43,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'node-click': [event: MouseTouchEvent, node: CustomNode]
-  'pane-click': []
+  'pane-click': [event: MouseTouchEvent]
 }>()
 
 const nodeTypes: Record<string, Component> = {

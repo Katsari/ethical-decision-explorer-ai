@@ -21,6 +21,8 @@
         :selected-node="selectedNode"
         @close="showSidePanel = false"
       />
+
+      <UNotifications />
     </div>
   </div>
 </template>
@@ -40,7 +42,7 @@ const nodes = ref<Node[]>([
     type: 'decision',
     position: { x: 250, y: 0 },
     data: {
-      label: 'Start Your Ethical Journey',
+      label: 'Start your ethical journey',
       description: '',
       choices: [
         {
@@ -58,6 +60,13 @@ const nodes = ref<Node[]>([
 
 const handleQuestionSubmit = async (question: string) => {
   isLoading.value = true
+  useToast().add({
+    title: 'Analyzing question',
+    description: 'Please wait while we generate the analysis...',
+    timeout: 6000,
+    pauseTimeoutOnHover: false,
+    color: 'bg-gray-900',
+  })
   try {
     const result = await generateDecisionTree(question)
 
@@ -130,8 +139,9 @@ const handleQuestionSubmit = async (question: string) => {
     edges.value = newEdges
 
     useToast().add({
-      title: 'Decision Tree Generated',
+      title: 'Decision tree generated',
       description: 'Explore the ethical implications by clicking on the nodes.',
+      timeout: 8000,
     })
   } catch (error) {
     console.error('Error generating decision tree:', error)

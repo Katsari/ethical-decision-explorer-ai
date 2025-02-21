@@ -50,7 +50,12 @@
         >
           <!-- Decision Node Content -->
           <div class="space-y-6">
-            <h3 class="font-medium text-gray-100 text-lg">Ethical Analysis</h3>
+            <h3
+              class="font-medium text-gray-100 text-lg"
+              v-if="selectedNode.label !== 'Start Your Ethical Journey'"
+            >
+              Ethical Analysis
+            </h3>
             <div
               v-for="(choice, index) in (selectedNode!.choices as Choice[])"
               :key="index"
@@ -61,10 +66,10 @@
 
               <!-- Framework Analysis -->
               <div v-if="choice.frameworkWeights" class="space-y-4">
-                <!-- Expected Choice-Worthiness -->
+                <!-- Maximize Expected Choice-Worthiness -->
                 <div class="space-y-2">
                   <h4 class="text-sm font-medium text-gray-400">
-                    Expected Choice-Worthiness
+                    Maximize Expected Choice-Worthiness
                   </h4>
                   <div class="flex items-center gap-2">
                     <UBadge
