@@ -81,6 +81,10 @@ useHead({
 
 import { useVueFlow, type Edge, type Node } from '@vue-flow/core'
 import { generateDecisionTree } from '~/utils/gemini'
+import {
+  edges as scenarioEdges,
+  nodes as scenarioNodes,
+} from '~/data/ethicalScenarios'
 
 const { fitView } = useVueFlow()
 
@@ -88,28 +92,9 @@ const isLoading = ref(false)
 const selectedNode = ref<any>(null)
 const showSidePanel = ref(false)
 
-const edges = ref<Edge[]>([])
-const nodes = ref<Node[]>([
-  {
-    id: '1',
-    type: 'decision',
-    position: { x: 0, y: 0 },
-    data: {
-      label: 'Start your ethical journey',
-      description: '',
-      choices: [
-        {
-          text: 'Begin by entering an ethical dilemma in the form above.',
-          targetNodeId: '',
-          frameworkWeights: null,
-          analysis: null,
-          expectedChoiceWorthiness: 0,
-          moralParliament: null,
-        },
-      ],
-    },
-  },
-])
+// Set initial nodes and edges
+const nodes = ref<Node[]>(scenarioNodes)
+const edges = ref<Edge[]>(scenarioEdges)
 
 const handleQuestionSubmit = async (question: string) => {
   isLoading.value = true

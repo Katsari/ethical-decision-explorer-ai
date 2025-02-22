@@ -73,12 +73,7 @@
         >
           <!-- Decision Node content -->
           <div class="space-y-6">
-            <h3
-              class="font-medium text-gray-100 text-lg"
-              v-if="selectedNode.label !== 'Start your ethical journey'"
-            >
-              Ethical Analysis
-            </h3>
+            <h3 class="font-medium text-gray-100 text-lg">Ethical Analysis</h3>
             <div
               v-for="(choice, index) in (selectedNode!.choices as Choice[])"
               :key="index"
@@ -300,7 +295,9 @@
 
               <!-- Ethical analysis -->
               <div v-if="choice.analysis" class="space-y-2">
-                <h4 class="text-sm font-medium text-gray-400">Overall Analysis</h4>
+                <h4 class="text-sm font-medium text-gray-400">
+                  Overall Analysis
+                </h4>
                 <p class="text-sm text-gray-300">{{ choice.analysis }}</p>
               </div>
             </div>

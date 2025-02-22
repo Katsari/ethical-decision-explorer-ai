@@ -52,7 +52,6 @@ const nodeTypes: Record<string, Component> = {
 
 onInit((instance) => {
   fitView()
-  zoomTo(0.9)
 })
 
 onNodesChange((changes) => {
