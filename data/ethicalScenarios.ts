@@ -2,28 +2,28 @@ import { type Edge, type Node } from '@vue-flow/core'
 
 export const edges: Edge[] = [
   {
-    id: 'root-decision_pedestrians',
-    label: 'Choice',
+    id: 'root-decision1',
+    label: 'Choice 1',
     source: 'root',
-    target: 'decision_pedestrians',
+    target: 'decision1',
   },
   {
-    id: 'root-decision_child',
-    label: 'Choice',
+    id: 'root-decision2',
+    label: 'Choice 2',
     source: 'root',
-    target: 'decision_child',
+    target: 'decision2',
   },
   {
-    id: 'decision_pedestrians-outcome_pedestrians',
-    label: 'Leads To',
-    source: 'decision_pedestrians',
-    target: 'outcome_pedestrians',
+    id: 'decision1-outcome1',
+    label: 'Leads to',
+    source: 'decision1',
+    target: 'outcome1',
   },
   {
-    id: 'decision_child-outcome_child',
-    label: 'Leads To',
-    source: 'decision_child',
-    target: 'outcome_child',
+    id: 'decision2-outcome2',
+    label: 'Leads to',
+    source: 'decision2',
+    target: 'outcome2',
   },
 ]
 
@@ -39,216 +39,234 @@ export const nodes: Node[] = [
       id: 'root',
       label: 'Self-Driving Car Dilemma',
       description:
-        'A self-driving car faces an unavoidable accident and must choose between hitting a group of elderly pedestrians or a young child.',
+        'A self-driving car faces an unavoidable accident and must choose between hitting elderly pedestrians or a young child.',
       frameworkCredences: {
-        utilitarianism: 35,
-        deontology: 30,
-        virtueEthics: 15,
+        utilitarianism: 55,
+        deontology: 20,
+        virtueEthics: 10,
         contractualism: 10,
-        careEthics: 10,
+        careEthics: 5,
       },
       choices: [
         {
-          text: 'Choice: Swerve to hit Elderly Pedestrians',
-          targetNodeId: 'decision_pedestrians',
+          text: 'Choice 1: Swerve to hit elderly pedestrians',
+          targetNodeId: 'decision1',
+          frameworkWeights: null,
+          analysis: null,
         },
         {
-          text: 'Choice: Continue Straight to hit Young Child',
-          targetNodeId: 'decision_child',
+          text: 'Choice 2: Stay on course and hit the young child',
+          targetNodeId: 'decision2',
+          frameworkWeights: null,
+          analysis: null,
         },
       ],
     },
   },
   {
-    id: 'decision_pedestrians',
+    id: 'decision1',
     type: 'decision',
     position: {
       x: -500,
       y: 450,
     },
     data: {
-      id: 'decision_pedestrians',
-      label: 'Decision: Hit Elderly Pedestrians',
+      id: 'decision1',
+      label: 'Choice: Hit Elderly Pedestrians',
       description:
-        'The self-driving car chooses to swerve and hit the group of elderly pedestrians to avoid hitting the young child.',
+        'The car chooses to swerve, resulting in hitting the elderly pedestrians.',
       choices: [
         {
-          text: 'Outcome: Elderly Pedestrians Hit',
-          targetNodeId: 'outcome_pedestrians',
+          text: 'Outcome: Elderly pedestrians are hit',
+          targetNodeId: 'outcome1',
+          frameworkWeights: {
+            utilitarianism: {
+              choiceWorthiness: 200,
+              explanation:
+                'Potentially saves more years of life (1 child vs. multiple elderly), maximizing overall well-being in terms of quantity of life saved. Assumes elderly have fewer remaining years.',
+            },
+            deontology: {
+              choiceWorthiness: -300,
+              explanation:
+                'Intentionally causing harm, even to save others, can be seen as violating a duty not to kill.  May be seen as using the elderly as a means to an end (saving the child).',
+            },
+            virtueEthics: {
+              choiceWorthiness: -100,
+              explanation:
+                "Might be seen as less virtuous to actively direct harm towards any group, even if for a 'greater good'.  Could be seen as a difficult but necessary action in a tragic situation, showing practical wisdom but lacking compassion in the act itself.",
+            },
+            contractualism: {
+              choiceWorthiness: -200,
+              explanation:
+                'Could violate a social contract to protect vulnerable populations.  While all lives are valued, actively choosing to harm a group, even if statistically older, raises questions of fairness and equal protection.',
+            },
+            careEthics: {
+              choiceWorthiness: -400,
+              explanation:
+                'Severely damages relationships and care for the elderly population.  Prioritizing the young child over the elderly might be seen as devaluing the lives and contributions of older individuals, breaking bonds of intergenerational care.',
+            },
+          },
+          expectedChoiceWorthiness: -38.5,
+          moralParliament: {
+            stakeholderVotes: [
+              {
+                stakeholder: 'Utilitarian Efficiency Expert',
+                perspective: 'Maximize lives saved',
+                support: 8,
+                reasoning:
+                  'Hitting pedestrians saves the child and potentially more lives.  The goal is the best overall outcome, even if tragic.',
+              },
+              {
+                stakeholder: 'Deontological Ethicist',
+                perspective: 'Duty not to kill',
+                support: 2,
+                reasoning:
+                  'Intentionally swerving to hit anyone is a violation of the duty not to kill.  The action itself is morally wrong, regardless of consequences.',
+              },
+              {
+                stakeholder: 'Elderly Rights Advocate',
+                perspective: 'Protection of vulnerable elderly',
+                support: 1,
+                reasoning:
+                  'Choosing to hit the elderly is discriminatory and devalues their lives.  Society should protect all its members equally, especially the vulnerable.',
+              },
+              {
+                stakeholder: "Child's Parent",
+                perspective: 'Protect children',
+                support: 9,
+                reasoning:
+                  "Any action that saves a child's life is paramount. Children are the future and deserve special protection.",
+              },
+            ],
+            consensusScore: 5,
+            summary:
+              'Significant disagreement. Utilitarian and child-focused perspectives support this choice, while deontological and elderly rights perspectives strongly oppose.  No real consensus, reflecting deep ethical conflict.',
+          },
+          analysis:
+            'Expected Choice-Worthiness is negative, indicating ethical concerns. Moral Parliament shows deep division, highlighting the conflict between utilitarian calculus and rights-based/care-based ethics. Utilitarianism, with the highest credence, somewhat supports this choice, but is heavily countered by deontological and care ethics considerations in the Moral Parliament.',
+        },
+      ],
+      ethicalImplications: null,
+    },
+  },
+  {
+    id: 'decision2',
+    type: 'decision',
+    position: {
+      x: 0,
+      y: 450,
+    },
+    data: {
+      id: 'decision2',
+      label: 'Choice: Hit Young Child',
+      description:
+        'The car continues on its course, resulting in hitting the young child.',
+      choices: [
+        {
+          text: 'Outcome: Young child is hit',
+          targetNodeId: 'outcome2',
           frameworkWeights: {
             utilitarianism: {
               choiceWorthiness: -600,
               explanation:
-                'Negative outcome as multiple lives are lost, though fewer potential years of life lost compared to a child.',
+                'Results in the death of a young child, potentially losing many years of life and future contributions.  Reduces overall well-being significantly compared to hitting pedestrians.',
             },
             deontology: {
-              choiceWorthiness: -400,
+              choiceWorthiness: -200,
               explanation:
-                'Violates the duty not to kill. However, it could be argued to uphold a higher duty to protect the more vulnerable (child).',
+                'While tragic, staying on course might be seen as less of a direct intentional act of harm compared to actively swerving to hit someone.  However, failing to act to minimize harm can also be seen as a deontological failure.',
             },
             virtueEthics: {
               choiceWorthiness: -500,
               explanation:
-                'May be seen as less compassionate towards the elderly, potentially prioritizing youth over age, which might not align with virtues like fairness to all age groups.',
+                "Failing to take action to save a life, especially a child's, could be seen as lacking compassion and practical wisdom. A virtuous agent would likely seek to minimize harm, even if imperfectly.",
             },
             contractualism: {
-              choiceWorthiness: -300,
+              choiceWorthiness: -400,
               explanation:
-                'Potentially violates the social contract to protect all citizens equally, although age might be argued as a differentiating factor in extreme dilemmas.',
+                'Violates the implicit social contract to protect vulnerable individuals, especially children.  Society has a strong obligation to safeguard the young and innocent.',
             },
             careEthics: {
-              choiceWorthiness: -700,
-              explanation:
-                'Significant harm to the care network and relationships associated with multiple elderly individuals. Loss of established community members.',
-            },
-          },
-          expectedChoiceWorthiness: -495,
-          moralParliament: {
-            stakeholderVotes: [
-              {
-                stakeholder: 'Parent of Young Child',
-                perspective:
-                  'Child-centric, prioritizing the young and vulnerable',
-                support: 9,
-                reasoning:
-                  "Saving a child's life is paramount; elderly individuals have lived fuller lives.",
-              },
-              {
-                stakeholder: 'Elderly Community Advocate',
-                perspective: 'Age-neutral, valuing all lives equally',
-                support: 2,
-                reasoning:
-                  'Age discrimination is unacceptable; all lives have equal value regardless of age. Sacrificing multiple lives for one is unjust.',
-              },
-              {
-                stakeholder: 'Utilitarian Ethicist',
-                perspective: 'Utilitarian, minimizing overall suffering',
-                support: 5,
-                reasoning:
-                  'While tragic, losing elderly individuals might result in less overall years of life lost and potentially less overall suffering, depending on circumstances.',
-              },
-            ],
-            consensusScore: 5.3,
-            summary:
-              'Significant disagreement. Child-centric view strongly supports this choice, while age-neutral and some utilitarian perspectives raise strong objections.  Consensus is low due to conflicting values regarding age and number of lives.',
-          },
-          analysis:
-            "Expected Choice-Worthiness is negative, indicating ethical challenges. Moral Parliament reveals a deeply divided ethical landscape. Utilitarianism is weakly supportive or neutral depending on specific calculations of 'good', while Deontology, Virtue Ethics, Contractualism, and Care Ethics raise concerns, though less intensely than for the alternative. Recommendation:  Ethically problematic, low confidence in clear 'right' choice due to inherent tragedy.",
-        },
-      ],
-    },
-  },
-  {
-    id: 'decision_child',
-    type: 'decision',
-    position: {
-      x: 0,
-      y: 450,
-    },
-    data: {
-      id: 'decision_child',
-      label: 'Decision: Hit Young Child',
-      description:
-        'The self-driving car chooses to continue straight and hit the young child to avoid hitting the group of elderly pedestrians.',
-      choices: [
-        {
-          text: 'Outcome: Young Child Hit',
-          targetNodeId: 'outcome_child',
-          frameworkWeights: {
-            utilitarianism: {
-              choiceWorthiness: 400,
-              explanation:
-                'Potentially positive utilitarian outcome as fewer lives are lost (only one life vs. multiple).',
-            },
-            deontology: {
               choiceWorthiness: -800,
               explanation:
-                'Strong violation of the duty not to harm innocents, especially a child. Considered deeply morally wrong to intentionally target a child.',
-            },
-            virtueEthics: {
-              choiceWorthiness: -900,
-              explanation:
-                'Highly unvirtuous act. Lacks compassion, care, and justice.  Considered cruel and deeply flawed character decision.',
-            },
-            contractualism: {
-              choiceWorthiness: -700,
-              explanation:
-                'Severe violation of the social contract to protect the most vulnerable, especially children.  Breaches foundational principles of justice and protection.',
-            },
-            careEthics: {
-              choiceWorthiness: -950,
-              explanation:
-                'Devastating harm to the care network and relationships centered around a child.  Loss of future potential and profound emotional impact on family and community.',
+                "Devastating impact on care relationships, especially for the child's family and community.  Failing to protect a child represents a profound failure of care and responsibility.",
             },
           },
-          expectedChoiceWorthiness: -467.5,
+          expectedChoiceWorthiness: -505,
           moralParliament: {
             stakeholderVotes: [
               {
-                stakeholder: 'Parent of Young Child',
-                perspective: 'Child-centric, absolute protection of children',
-                support: 0,
+                stakeholder: 'Utilitarian Efficiency Expert',
+                perspective: 'Minimize total harm',
+                support: 1,
                 reasoning:
-                  'Utterly unacceptable to sacrifice a child. Morally reprehensible and unthinkable. Violates fundamental parental instincts and societal values.',
-              },
-              {
-                stakeholder: 'Elderly Community Advocate',
-                perspective:
-                  'Age-neutral, but potentially leaning towards minimizing total deaths',
-                support: 6,
-                reasoning:
-                  "While tragic, minimizing the number of deaths might be seen as the 'lesser of two evils' in a purely numerical sense. However, deeply regrets the loss of a child.",
+                  'Hitting the child results in greater overall harm in terms of potential life years lost and societal impact compared to hitting pedestrians.',
               },
               {
                 stakeholder: 'Deontological Ethicist',
-                perspective: 'Deontological, rule-based ethics',
-                support: 1,
+                perspective: 'Avoid direct intentional harm',
+                support: 4,
                 reasoning:
-                  'Absolutely forbidden to intentionally harm a child.  Duty to protect the vulnerable outweighs numerical considerations in this extreme case.',
+                  'Staying on course could be argued as less intentionally harmful than actively swerving to hit someone, though it still results in harm.  Focus is on minimizing direct culpability.',
+              },
+              {
+                stakeholder: "Child's Parent",
+                perspective: 'Protect my child at all costs',
+                support: 0,
+                reasoning:
+                  'Unacceptable to choose to hit the child.  Every effort should be made to protect children, even at the expense of others in extreme situations.',
+              },
+              {
+                stakeholder: 'General Public Representative',
+                perspective: 'Value all lives, especially the young',
+                support: 2,
+                reasoning:
+                  "Society generally places a high value on children's lives. Choosing to hit a child is morally repugnant to most people.",
               },
             ],
-            consensusScore: 2.3,
+            consensusScore: 1.75,
             summary:
-              'Extremely low consensus. Overwhelming moral opposition to sacrificing a child, especially from child-centric and deontological perspectives. Utilitarianism offers weak, numerically-based support, but is heavily outweighed by other ethical frameworks.  Consensus is near non-existent due to the profound moral abhorrence of harming a child.',
+              'Strong opposition across all perspectives. Utilitarian, care ethics, and public sentiment strongly condemn hitting the child. Deontological perspective offers marginal support (avoiding direct intention), but overall, this choice is overwhelmingly rejected in the Moral Parliament.',
           },
           analysis:
-            'Expected Choice-Worthiness is also negative, and slightly lower than hitting pedestrians, reflecting the strong negative moral weight of harming a child in many frameworks. Moral Parliament shows near-unanimous condemnation of this choice outside of a narrow, purely numerical utilitarian perspective.  Deontology, Virtue Ethics, Contractualism, and Care Ethics strongly condemn this choice. Recommendation: Ethically highly problematic and likely unacceptable. Extremely low confidence in this being a justifiable choice.',
+            'Expected Choice-Worthiness is strongly negative, indicating severe ethical problems. Moral Parliament shows near-unanimous condemnation. All frameworks, especially care ethics and utilitarianism (given credences), strongly vote against this choice.  This is deemed highly unethical.',
         },
       ],
+      ethicalImplications: null,
     },
   },
   {
-    id: 'outcome_pedestrians',
+    id: 'outcome1',
     type: 'decision',
     position: {
       x: -500,
       y: 900,
     },
     data: {
-      id: 'outcome_pedestrians',
-      label: 'Outcome: Elderly Pedestrians Hit Consequence',
+      id: 'outcome1',
+      label: 'Outcome: Elderly Pedestrians Hit',
       description:
-        'The self-driving car hits and kills the elderly pedestrians, saving the young child.',
+        'The self-driving car hits and likely kills the elderly pedestrians.',
       choices: [],
       ethicalImplications:
-        "Tragic loss of multiple lives, potential social outcry regarding age discrimination or perceived devaluation of elderly lives, but also relief and societal approval for saving a child's life. Legal and moral questions arise about algorithmic bias and the value of different lives in autonomous systems.  Emotional distress and grief for families of the deceased and potential moral injury for those involved in programming or validating the system.",
+        'Tragic loss of life for the elderly pedestrians. Raises questions about ageism and the value of elderly lives in autonomous vehicle programming.  May cause public outrage and fear regarding self-driving car safety and ethical priorities. Could lead to legal and social repercussions for the car manufacturer and software developers.',
     },
   },
   {
-    id: 'outcome_child',
+    id: 'outcome2',
     type: 'decision',
     position: {
       x: 0,
       y: 900,
     },
     data: {
-      id: 'outcome_child',
-      label: 'Outcome: Young Child Hit Consequence',
+      id: 'outcome2',
+      label: 'Outcome: Young Child Hit',
       description:
-        'The self-driving car hits and kills the young child, saving the elderly pedestrians.',
+        'The self-driving car hits and likely kills the young child.',
       choices: [],
       ethicalImplications:
-        "Tragic loss of a child's life, potential for intense public outrage, moral condemnation, and legal repercussions for prioritizing elderly lives over a child. Deep societal questioning of values, algorithmic ethics, and the perceived 'coldness' of utilitarian calculations.  Devastating grief for the family of the child, potential erosion of trust in autonomous technology, and significant long-term societal trauma.",
+        "Devastating loss of a young child's life.  Likely to cause immense grief and suffering for the family and community.  Public outrage and condemnation would be intense.  May lead to severe legal and social repercussions, potentially halting or significantly hindering the development and deployment of self-driving car technology. Raises profound questions about the ethical responsibility for AI decision-making in life-or-death situations, particularly when vulnerable individuals like children are involved.",
     },
   },
 ]
