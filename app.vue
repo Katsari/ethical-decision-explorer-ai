@@ -1,9 +1,56 @@
 <template>
   <div class="h-screen flex flex-col bg-gray-950">
-    <QuestionInterface :is-loading="isLoading" @submit="handleQuestionSubmit" />
+    <div
+      class="flex flex-col md:flex-row items-center space-x-4 gap-4 py-3 px-4 bg-gray-900"
+    >
+      <!-- Logo + Name + GitHub -->
+      <div
+        class="flex items-center w-full md:w-auto justify-between md:justify-start self-start"
+      >
+        <div class="flex items-center gap-3">
+          <img
+            src="/logo.svg"
+            alt="Ethical Decision Explorer Logo"
+            class="h-10 w-10"
+          />
+          <h1 class="text-white text-md font-semibold whitespace-nowrap">
+            Ethical Decision Explorer
+          </h1>
+        </div>
 
-    <div class="flex flex-1 overflow-hidden">
-      <div class="flex-1">
+        <!-- GitHub icon -->
+        <a
+          href="https://github.com/Katsari/ethical-decision-explorer-ai"
+          target="_blank"
+          rel="noopener"
+          class="text-gray-400 hover:text-white transition-colors flex-shrink-0 md:hidden"
+        >
+          <UIcon name="i-line-md-github-loop" class="h-6 w-6" />
+        </a>
+      </div>
+
+      <!-- Question Interface -->
+      <div class="w-full flex-1 flex items-center gap-4">
+        <QuestionInterface
+          :is-loading="isLoading"
+          @submit="handleQuestionSubmit"
+          class="flex-1"
+        />
+
+        <!-- GitHub icon on desktop -->
+        <a
+          href="https://github.com/Katsari/ethical-decision-explorer-ai"
+          target="_blank"
+          rel="noopener"
+          class="hidden md:block ml-8 text-gray-400 hover:text-white transition-colors flex-shrink-0 self-start"
+        >
+          <UIcon name="i-line-md-github-loop" class="h-6 w-6" />
+        </a>
+      </div>
+    </div>
+
+    <div class="flex-1 flex flex-col overflow-hidden">
+      <div class="flex-1 overflow-hidden">
         <ClientOnly>
           <FlowCanvas
             :nodes="nodes"
@@ -14,26 +61,28 @@
             @update:edges="edges = $event"
           />
         </ClientOnly>
+
+        <SidePanel
+          v-if="showSidePanel"
+          :selected-node="selectedNode"
+          @close="showSidePanel = false"
+        />
+
+        <UNotifications />
       </div>
-
-      <SidePanel
-        v-if="showSidePanel"
-        :selected-node="selectedNode"
-        @close="showSidePanel = false"
-      />
-
-      <UNotifications />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { Edge, Node } from '@vue-flow/core'
-import { generateDecisionTree } from '~/utils/gemini'
-
 useHead({
   link: [{ rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }],
 })
+
+import { useVueFlow, type Edge, type Node } from '@vue-flow/core'
+import { generateDecisionTree } from '~/utils/gemini'
+
+const { fitView } = useVueFlow()
 
 const isLoading = ref(false)
 const selectedNode = ref<any>(null)
@@ -44,7 +93,7 @@ const nodes = ref<Node[]>([
   {
     id: '1',
     type: 'decision',
-    position: { x: 250, y: 0 },
+    position: { x: 0, y: 0 },
     data: {
       label: 'Start your ethical journey',
       description: '',
@@ -64,20 +113,25 @@ const nodes = ref<Node[]>([
 
 const handleQuestionSubmit = async (question: string) => {
   isLoading.value = true
+
   useToast().add({
     title: 'Analyzing question',
     description: 'Please wait while we generate the analysis...',
     timeout: 9000,
   })
+
   try {
     const result = await generateDecisionTree(question)
 
-    // Create a map to store the level of each node
+    // Create a map to store the level of each node in the tree
     const nodeLevels = new Map()
+
+    // Recursive function to process nodes and assign levels
     const processNode = (nodeId: string, level: number) => {
       nodeLevels.set(nodeId, level)
       const node = result.nodes.find((n) => n.id === nodeId)
       if (node) {
+        // Process each choice, incrementing the level for child nodes
         node.choices?.forEach((choice) => {
           if (!nodeLevels.has(choice.targetNodeId)) {
             processNode(choice.targetNodeId, level + 1)
@@ -86,10 +140,10 @@ const handleQuestionSubmit = async (question: string) => {
       }
     }
 
-    // Start with the root node
+    // Start processing from the root node at level 0
     processNode('root', 0)
 
-    // Calculate the maximum nodes at any level
+    // Calculate the width (number of nodes) at each level
     const levelWidths = new Map()
     nodeLevels.forEach((level, nodeId) => {
       levelWidths.set(level, (levelWidths.get(level) || 0) + 1)
@@ -103,9 +157,6 @@ const handleQuestionSubmit = async (question: string) => {
       const position = levelPositions.get(level) || 0
       levelPositions.set(level, position + 1)
 
-      // Calculate positions relative to window center
-      const screenCenter =
-        typeof window !== 'undefined' ? window.innerWidth / 4 : 0
       const xOffset = (position - width / 2) * 500
       const yOffset = level * 450
 
@@ -113,7 +164,7 @@ const handleQuestionSubmit = async (question: string) => {
         id: node.id,
         type: 'decision',
         position: {
-          x: screenCenter + xOffset,
+          x: xOffset,
           y: yOffset,
         },
         data: {
@@ -129,11 +180,7 @@ const handleQuestionSubmit = async (question: string) => {
 
     const newEdges = result.edges.map((edge) => ({
       id: `${edge.source}-${edge.target}`,
-      type: 'smoothstep',
-      animated: true,
       label: edge.label,
-      labelStyle: { fontSize: 12 },
-      style: { stroke: '#2563eb' },
       source: edge.source,
       target: edge.target,
     }))

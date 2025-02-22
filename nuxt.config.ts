@@ -40,7 +40,11 @@ export default defineNuxtConfig({
   icon: {
     clientBundle: {
       // list of icons to include in the client bundle
-      icons: ['heroicons:x-mark', 'heroicons:arrow-path-20-solid'],
+      icons: [
+        'heroicons:x-mark',
+        'heroicons:arrow-path-20-solid',
+        'line-md:github-loop',
+      ],
       scan: true,
     },
   },
