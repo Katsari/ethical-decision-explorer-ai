@@ -52,7 +52,7 @@ const GEMINI_PROMPT = `Create a strictly structured tree for an ethical dilemma 
       For each stakeholder:
       - Identity: Who they are and their role
       - Perspective: Their ethical viewpoint
-      - Support Score (0-10): How strongly they support/oppose
+      - Support Score (0-10): How strongly they support/oppose. Must be between 0 and 10.
       - Reasoning: Why they take this position
       
       Provide:
@@ -159,6 +159,7 @@ const GEMINI_PROMPT = `Create a strictly structured tree for an ethical dilemma 
 - Decision nodes with more than one choice
 - Framework credences not summing to 100%
 - Different framework credences between choices
+- Negative support and consensus scores
 - Disconnected nodes
 
 Generate the tree responding to the Current Dilemma. Return only the JSON tree, do not include any other text.`
