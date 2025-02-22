@@ -70,8 +70,8 @@ By combining MEC with moral parliament deliberation, you can explore how differe
 1. Clone the repository:
 
 ```bash
-git clone <repository-url>
-cd ethical-analysis-visualizer-ai
+git clone https://github.com/Katsari/ethical-decision-explorer-ai.git
+cd ethical-decision-explorer-ai
 ```
 
 2. Install dependencies:
